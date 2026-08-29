@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhotoEdit - Online Image Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/landing.css">
+</head>
+<body>
+
+  
+
+  <header>
+    <nav class="wrap">
+      <div class="logo">
+        <img src="images/logo.png" alt="PhotoEdit logo" class="brand-logo">
+       
+      </div>
+      <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#testimonials">Partners</a>
+      </div>
+      <a class="nav-cta" href="#cta">Book a call</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="wrap hero-copy">
+        <h1>Advanced <span>Image Editing Made Simpler</span></h1>
+        <p class="hero-sub">Edit, enhance, resize, optimize, and convert your images with powerful tools—all directly in your browser.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#cta">Start editing</a>
+          <a class="btn btn-ghost" href="#work">Explore Features</a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="upload-box" id="uploadBox" role="button" tabindex="0" aria-label="Upload image by dropping file or clicking">
+          <div class="upload-icon">↑</div>
+          <h3>Drag and drop the image here</h3>
+          <p>Or click to select file upload</p>
+          <button class="btn btn-soft" id="browseBtn">Browse files</button>
+          <small>Supports JPG, PNG, GIF, and WEBP formats, maximum size 50MB.</small>
+          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.gif,.webp" hidden />
+          <div class="file-result" id="fileResult" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="work">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-label">Selected work</div>
+          <h2>Case studies we're proud to show.</h2>
+        </div>
+        <p class="section-note">Swap each card's image slot and text for a real project.</p>
+      </div>
+      <div class="work-grid">
+        <div class="work-card reveal">
+          <div class="img-slot"><div class="ico"></div>Project image</div>
+          <div class="work-meta">
+            <div class="work-name">Client One</div>
+            <div class="work-tag">Verified</div>
+          </div>
+          <div class="work-desc">One line on the outcome you delivered.</div>
+        </div>
+        <div class="work-card reveal">
+          <div class="img-slot"><div class="ico"></div>Project image</div>
+          <div class="work-meta">
+            <div class="work-name">Client Two</div>
+            <div class="work-tag">Verified</div>
+          </div>
+          <div class="work-desc">One line on the outcome you delivered.</div>
+        </div>
+        <div class="work-card reveal">
+          <div class="img-slot"><div class="ico"></div>Project image</div>
+          <div class="work-meta">
+            <div class="work-name">Client Three</div>
+            <div class="work-tag">Verified</div>
+          </div>
+          <div class="work-desc">One line on the outcome you delivered.</div>
+        </div>
+        <div class="work-card reveal">
+          <div class="img-slot"><div class="ico"></div>Project image</div>
+          <div class="work-meta">
+            <div class="work-name">Client Four</div>
+            <div class="work-tag">Case study coming soon</div>
+          </div>
+          <div class="work-desc">One line on the outcome you delivered.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="stats">
+        <div class="reveal">
+          <strong>1M+</strong>
+          <span>Active users</span>
+        </div>
+        <div class="reveal">
+          <strong>50M+</strong>
+          <span>Edit photos</span>
+        </div>
+        <div class="reveal">
+          <strong>4.9★</strong>
+          <span>User ratings</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="testimonials">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-label">Partners</div>
+          <h2>Hear from the people we've worked with.</h2>
+        </div>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card reveal">
+          <div class="testi-quote">"Replace this with a real quote about the result you delivered."</div>
+          <div class="testi-who">
+            <div class="avatar"></div>
+            <div>
+              <div class="name">Person Name</div>
+              <div class="role">Title, Company</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="testi-quote">"A second quote — keep it specific, keep it short."</div>
+          <div class="testi-who">
+            <div class="avatar"></div>
+            <div>
+              <div class="name">Person Name</div>
+              <div class="role">Title, Company</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="cta">
+    <div class="wrap">
+      <div class="cta-avail">2 open spots left this month</div>
+      <h2>Tell us what you're building.</h2>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="#">Book a 15-minute call</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 Studio</div>
+      <div class="socials">
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/frontend/script.js"></script>
+  <script>
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  </script>
+
+</body>
+</html>
