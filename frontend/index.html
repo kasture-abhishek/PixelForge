@@ -16,15 +16,15 @@
   <header>
     <nav class="wrap">
       <div class="logo">
-        <img src="images/logo.png" alt="PhotoEdit logo" class="brand-logo">
-       
+        <img src="/assets/images/logo.png"  class="brand-logo">
+
       </div>
       <div class="nav-links">
         <a href="#work">Work</a>
         <a href="#about">About</a>
         <a href="#testimonials">Partners</a>
       </div>
-      <a class="nav-cta" href="#cta">Book a call</a>
+      <a class="nav-cta" href="#cta">Start Editing</a>
     </nav>
   </header>
 
@@ -56,49 +56,221 @@
     <div class="wrap">
       <div class="section-head reveal">
         <div>
-          <div class="section-label">Selected work</div>
-          <h2>Case studies we're proud to show.</h2>
+          <div class="section-label">Powerful features</div>
+          <h2>Every image tool you need, in one place.</h2>
         </div>
-        <p class="section-note">Swap each card's image slot and text for a real project.</p>
+        <p class="section-note">Merge, convert, compress, enhance, and secure your images — 100% free and browser-based.</p>
       </div>
-      <div class="work-grid">
-        <div class="work-card reveal">
-          <div class="img-slot"><div class="ico"></div>Project image</div>
-          <div class="work-meta">
-            <div class="work-name">Client One</div>
-            <div class="work-tag">Verified</div>
+
+      <!-- Category filter -->
+     
+
+      <div class="feat-grid" id="featGrid">
+
+        <!-- Organize -->
+        <div class="feat-card reveal" data-cat="organize">
+          <div class="feat-icon" style="--ic:#F97316;">🗂️</div>
+          <div class="feat-body">
+            <div class="feat-name">Batch Processing</div>
+            <div class="feat-desc">Process dozens of images at once — resize, compress, or convert in a single run.</div>
           </div>
-          <div class="work-desc">One line on the outcome you delivered.</div>
         </div>
-        <div class="work-card reveal">
-          <div class="img-slot"><div class="ico"></div>Project image</div>
-          <div class="work-meta">
-            <div class="work-name">Client Two</div>
-            <div class="work-tag">Verified</div>
+
+        <div class="feat-card reveal" data-cat="organize">
+          <div class="feat-icon" style="--ic:#EAB308;">🔀</div>
+          <div class="feat-body">
+            <div class="feat-name">Merge Images</div>
+            <div class="feat-desc">Combine multiple images into one canvas — side by side or stacked vertically.</div>
           </div>
-          <div class="work-desc">One line on the outcome you delivered.</div>
         </div>
-        <div class="work-card reveal">
-          <div class="img-slot"><div class="ico"></div>Project image</div>
-          <div class="work-meta">
-            <div class="work-name">Client Three</div>
-            <div class="work-tag">Verified</div>
+
+        <div class="feat-card reveal" data-cat="organize">
+          <div class="feat-icon" style="--ic:#F97316;">✂️</div>
+          <div class="feat-body">
+            <div class="feat-name">Smart Crop</div>
+            <div class="feat-desc">Crop with preset aspect ratios or free-hand — accurate to the pixel.</div>
           </div>
-          <div class="work-desc">One line on the outcome you delivered.</div>
         </div>
-        <div class="work-card reveal">
-          <div class="img-slot"><div class="ico"></div>Project image</div>
-          <div class="work-meta">
-            <div class="work-name">Client Four</div>
-            <div class="work-tag">Case study coming soon</div>
+
+        <div class="feat-card reveal" data-cat="organize">
+          <div class="feat-icon" style="--ic:#DC2626;">🔄</div>
+          <div class="feat-body">
+            <div class="feat-name">Rotate &amp; Flip</div>
+            <div class="feat-desc">Rotate by any angle or flip horizontally / vertically in one click.</div>
           </div>
-          <div class="work-desc">One line on the outcome you delivered.</div>
         </div>
+
+        <!-- Optimize -->
+        <div class="feat-card reveal" data-cat="optimize">
+          <div class="feat-icon" style="--ic:#10B981;">⚡</div>
+          <div class="feat-body">
+            <div class="feat-name">Compress Image</div>
+            <div class="feat-desc">Reduce file size while preserving maximum visual quality.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="optimize">
+          <div class="feat-icon" style="--ic:#0EA5E9;">⚙️</div>
+          <div class="feat-body">
+            <div class="feat-name">Quality Control</div>
+            <div class="feat-desc">Fine-tune compression level and output quality before saving.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="optimize">
+          <div class="feat-icon" style="--ic:#EAB308;">📐</div>
+          <div class="feat-body">
+            <div class="feat-name">Image Dimensions</div>
+            <div class="feat-desc">Resize to exact pixel values or lock aspect ratio precisely.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="optimize">
+          <div class="feat-icon" style="--ic:#10B981;">↩️</div>
+          <div class="feat-body">
+            <div class="feat-name">Reset / Restore Original</div>
+            <div class="feat-desc">Instantly revert all edits back to the untouched source image.</div>
+          </div>
+        </div>
+
+        <!-- Convert -->
+        <div class="feat-card reveal" data-cat="convert">
+          <div class="feat-icon" style="--ic:#7C3AED;">🖼️</div>
+          <div class="feat-body">
+            <div class="feat-name">PNG / JPG / WebP</div>
+            <div class="feat-desc">Import and export in all major formats — lossless and lossy.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="convert">
+          <div class="feat-icon" style="--ic:#6366F1;">📄</div>
+          <div class="feat-body">
+            <div class="feat-name">Image to PDF</div>
+            <div class="feat-desc">Pack one or many images into a neat, shareable PDF document.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="convert">
+          <div class="feat-icon" style="--ic:#EC4899;">📤</div>
+          <div class="feat-body">
+            <div class="feat-name">PDF to Image</div>
+            <div class="feat-desc">Extract every PDF page as a high-res PNG or JPG image instantly.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="convert">
+          <div class="feat-icon" style="--ic:#14B8A6;">🎞️</div>
+          <div class="feat-body">
+            <div class="feat-name">GIF / AVIF Support</div>
+            <div class="feat-desc">Convert to and from animated GIF or next-gen AVIF with ease.</div>
+          </div>
+        </div>
+
+        <!-- Edit -->
+        <div class="feat-card reveal" data-cat="edit">
+          <div class="feat-icon" style="--ic:#EC4899;">🎨</div>
+          <div class="feat-body">
+            <div class="feat-name">Filter Intensity</div>
+            <div class="feat-desc">Dial in every filter from subtle to bold with a smooth slider.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="edit">
+          <div class="feat-icon" style="--ic:#EAB308;">📊</div>
+          <div class="feat-body">
+            <div class="feat-name">Histogram</div>
+            <div class="feat-desc">Live RGB histogram — never blow out highlights or crush shadows.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="edit">
+          <div class="feat-icon" style="--ic:#3452FF;">🕓</div>
+          <div class="feat-body">
+            <div class="feat-name">Edit History</div>
+            <div class="feat-desc">Full undo / redo stack — step backwards through every change.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="edit">
+          <div class="feat-icon" style="--ic:#64748B;">🌗</div>
+          <div class="feat-body">
+            <div class="feat-name">Dark / Light Themes</div>
+            <div class="feat-desc">Switch the editor UI to whichever mode suits your workspace.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="edit">
+          <div class="feat-icon" style="--ic:#14B8A6;">⌨️</div>
+          <div class="feat-body">
+            <div class="feat-name">Keyboard Shortcuts</div>
+            <div class="feat-desc">Speed through edits without lifting your hands off the keyboard.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="edit">
+          <div class="feat-icon" style="--ic:#F97316;">💧</div>
+          <div class="feat-body">
+            <div class="feat-name">Add Watermark</div>
+            <div class="feat-desc">Stamp text or image watermarks anywhere on your photo with opacity control.</div>
+          </div>
+        </div>
+
+        <!-- AI Intelligence -->
+        <div class="feat-card reveal" data-cat="ai">
+          <div class="feat-icon" style="--ic:#6366F1;">✨</div>
+          <div class="feat-body">
+            <div class="feat-name">Auto Enhance</div>
+            <div class="feat-desc">One-click AI boost for lighting, contrast, and colour balance.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="ai">
+          <div class="feat-icon" style="--ic:#7C3AED;">🪄</div>
+          <div class="feat-body">
+            <div class="feat-name">AI Background Removal</div>
+            <div class="feat-desc">Remove backgrounds with AI precision in seconds — no green screen needed.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="ai">
+          <div class="feat-icon" style="--ic:#EC4899;">🔍</div>
+          <div class="feat-body">
+            <div class="feat-name">AI Upscale</div>
+            <div class="feat-desc">Enlarge images up to 4× without blurring, powered by super-resolution AI.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="ai">
+          <div class="feat-icon" style="--ic:#10B981;">🌿</div>
+          <div class="feat-body">
+            <div class="feat-name">Noise Reduction</div>
+            <div class="feat-desc">AI denoiser cleans up grainy photos while preserving sharp detail.</div>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="feat-card reveal" data-cat="security">
+          <div class="feat-icon" style="--ic:#059669;">🔒</div>
+          <div class="feat-body">
+            <div class="feat-name">Privacy First</div>
+            <div class="feat-desc">All processing happens in your browser — nothing ever leaves your device.</div>
+          </div>
+        </div>
+
+        <div class="feat-card reveal" data-cat="security">
+          <div class="feat-icon" style="--ic:#DC2626;">🛡️</div>
+          <div class="feat-body">
+            <div class="feat-name">Metadata Scrubbing</div>
+            <div class="feat-desc">Strip EXIF data — location, device info, and timestamps — before sharing.</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
   <section class="section" id="about">
+
     <div class="wrap">
       <div class="stats">
         <div class="reveal">
