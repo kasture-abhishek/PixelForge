@@ -20,9 +20,9 @@
 
       </div>
       <div class="nav-links">
-        <a href="#work">Work</a>
-        <a href="#about">About</a>
-        <a href="#testimonials">Partners</a>
+        <a href="#work">Features</a>
+        <a href="#workflow">How It Works</a>
+        <a href="#formats">Formats</a>
       </div>
       <a class="nav-cta" href="#cta">Start Editing</a>
     </nav>
@@ -269,65 +269,176 @@
     </div>
   </section>
 
-  <section class="section" id="about">
-
+  <!-- #workflow: Option A (How It Works) + Option B (Format Badges) combined -->
+  <section class="section" id="workflow">
     <div class="wrap">
-      <div class="stats">
-        <div class="reveal">
-          <strong>1M+</strong>
-          <span>Active users</span>
-        </div>
-        <div class="reveal">
-          <strong>50M+</strong>
-          <span>Edit photos</span>
-        </div>
-        <div class="reveal">
-          <strong>4.9★</strong>
-          <span>User ratings</span>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <section class="section" id="testimonials">
-    <div class="wrap">
+      <!-- Section header -->
       <div class="section-head reveal">
         <div>
-          <div class="section-label">Partners</div>
-          <h2>Hear from the people we've worked with.</h2>
+          <div class="section-label">How it works</div>
+          <h2>From upload to download in three steps.</h2>
+        </div>
+        <p class="section-note">No account. No watermark. No servers.</p>
+      </div>
+
+      <!-- Option A: 3-step cards with connector line -->
+      <div class="steps-row reveal">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon">🖼</div>
+          <div class="step-name">Drop your image</div>
+          <div class="step-desc">Drag-drop or browse. JPG, PNG, GIF, WEBP — up to 50 MB.</div>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon">🎨</div>
+          <div class="step-name">Pick your tools</div>
+          <div class="step-desc">Adjust, filter, crop, convert — all live in-browser, zero uploads.</div>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon">⬇</div>
+          <div class="step-name">Export &amp; Download</div>
+          <div class="step-desc">Save as any format. Files stay on your device the entire time.</div>
         </div>
       </div>
-      <div class="testi-grid">
-        <div class="testi-card reveal">
-          <div class="testi-quote">"Replace this with a real quote about the result you delivered."</div>
-          <div class="testi-who">
-            <div class="avatar"></div>
-            <div>
-              <div class="name">Person Name</div>
-              <div class="role">Title, Company</div>
-            </div>
-          </div>
+
+      <!-- Honest stats -->
+      <div class="stats reveal">
+        <div>
+          <strong>25+</strong>
+          <span>Built-in tools</span>
         </div>
-        <div class="testi-card reveal">
-          <div class="testi-quote">"A second quote — keep it specific, keep it short."</div>
-          <div class="testi-who">
-            <div class="avatar"></div>
-            <div>
-              <div class="name">Person Name</div>
-              <div class="role">Title, Company</div>
-            </div>
-          </div>
+        <div>
+          <strong>6</strong>
+          <span>Export formats</span>
+        </div>
+        <div>
+          <strong>0</strong>
+          <span>Servers used</span>
         </div>
       </div>
+
+      <!-- Option B: Format Support Showcase (enhanced) -->
+      <div class="formats-wrap reveal" id="formats">
+
+        <div class="formats-header">
+          <div>
+            <div class="section-label" style="margin-bottom:6px;">Format support</div>
+            <div class="formats-title">What goes in. What comes out.</div>
+          </div>
+          <p class="formats-note">PixelForge reads 7 formats and writes 6 — all processed locally, never uploaded.</p>
+        </div>
+
+        <div class="formats-divider"></div>
+
+        <!-- Per-format rows -->
+        <div class="formats-table">
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">JPG</span>
+            <span class="fmt-type lossy">Lossy</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Photos, camera shots, social media exports</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">PNG</span>
+              <span class="fmt-out">WEBP</span>
+              <span class="fmt-out">AVIF</span>
+              <span class="fmt-out">PDF</span>
+            </div>
+          </div>
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">PNG</span>
+            <span class="fmt-type lossless">Lossless</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Icons, UI assets, transparent backgrounds</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">JPG</span>
+              <span class="fmt-out">WEBP</span>
+              <span class="fmt-out">AVIF</span>
+              <span class="fmt-out">PDF</span>
+            </div>
+          </div>
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">WEBP</span>
+            <span class="fmt-type modern">Modern</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Web-optimised images, smaller than JPG &amp; PNG</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">JPG</span>
+              <span class="fmt-out">PNG</span>
+              <span class="fmt-out">AVIF</span>
+              <span class="fmt-out">PDF</span>
+            </div>
+          </div>
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">AVIF</span>
+            <span class="fmt-type modern">Next-gen</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Smallest file size, HDR &amp; wide colour support</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">JPG</span>
+              <span class="fmt-out">PNG</span>
+              <span class="fmt-out">WEBP</span>
+              <span class="fmt-out">PDF</span>
+            </div>
+          </div>
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">GIF</span>
+            <span class="fmt-type animated">Animated</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Animated images, frame-by-frame previews</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">JPG</span>
+              <span class="fmt-out">PNG</span>
+              <span class="fmt-out">WEBP</span>
+            </div>
+          </div>
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">PDF</span>
+            <span class="fmt-type document">Document</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Extract pages as high-res images instantly</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">JPG</span>
+              <span class="fmt-out">PNG</span>
+              <span class="fmt-out">WEBP</span>
+            </div>
+          </div>
+
+          <div class="fmt-row">
+            <span class="fmt-badge fmt-in">BMP</span>
+            <span class="fmt-type lossless">Legacy</span>
+            <span class="fmt-arrow">→</span>
+            <span class="fmt-desc">Uncompressed bitmaps from older software</span>
+            <div class="fmt-out-pills">
+              <span class="fmt-out">JPG</span>
+              <span class="fmt-out">PNG</span>
+              <span class="fmt-out">WEBP</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
     </div>
   </section>
 
   <section class="cta" id="cta">
     <div class="wrap">
-      <div class="cta-avail">2 open spots left this month</div>
-      <h2>Tell us what you're building.</h2>
+      <div class="cta-avail">Your images. Your browser. No uploads.</div>
+      <h2>Start editing — right now.</h2>
       <div class="cta-actions">
-        <a class="btn btn-primary" href="#">Book a 15-minute call</a>
+        <a class="btn btn-primary" href="/pages/editor.html">Open the Editor →</a>
       </div>
     </div>
   </section>
