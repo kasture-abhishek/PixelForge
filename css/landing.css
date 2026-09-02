@@ -627,8 +627,27 @@
 
   /* ---------- CTA ---------- */
   .cta{
+    position: relative;
     padding: 110px 0;
     text-align:center;
+    isolation: isolate;
+    background-color: var(--bg);
+    background-image: linear-gradient(rgba(241,239,236,0.46), rgba(241,239,236,0.46)), url('/assets/images/among-us.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+  .cta::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(241,239,236,0.18);
+    z-index: -1;
+  }
+  .cta > .wrap{
+    position: relative;
+    z-index: 1;
   }
   .cta-avail{
     font-family: var(--mono);
