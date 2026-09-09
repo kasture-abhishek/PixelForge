@@ -309,15 +309,15 @@
       <!-- Honest stats -->
       <div class="stats reveal">
         <div>
-          <strong>25+</strong>
+          <strong data-target="25" data-duration="1500">25+</strong>
           <span>Built-in tools</span>
         </div>
         <div>
-          <strong>6</strong>
+          <strong data-target="6" data-duration="1700">6</strong>
           <span>Export formats</span>
         </div>
         <div>
-          <strong>0</strong>
+          <strong data-target="0" data-duration="1000">0</strong>
           <span>Servers used</span>
         </div>
       </div>
@@ -454,7 +454,7 @@
     </div>
   </footer>
 
-  <script src="/frontend/script.js"></script>
+  <script src="/js/script.js"></script>
   <script>
     const revealEls = document.querySelectorAll('.reveal');
     const io = new IntersectionObserver((entries) => {

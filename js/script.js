@@ -9,6 +9,9 @@ const fileInput = document.getElementById("fileInput");
 
 const fileResult = document.getElementById("fileResult");
 
+const statsSection = document.querySelector(".stats");
+const counterAnimation = document.querySelectorAll(".stats strong[data-target]");
+
 if (menuToggle && mainNav && navActions) {
 	menuToggle.addEventListener("click", () => {
 
@@ -94,4 +97,44 @@ if (uploadBox && browseBtn && fileInput) {
 
 		validateAndShowFile(file);
 	});
+}
+if (statsSection && counterAnimation.length > 0) {
+	const counterObserver = new IntersectionObserver((entries, observer) => {
+		if (!entries[0].isIntersecting) {
+			return;
+		}
+
+		counterAnimation.forEach((counter) => {
+			const target = Number.parseInt(counter.dataset.target, 10);
+			const duration = Number.parseInt(counter.dataset.duration, 10);
+
+			if (Number.isFinite(target) && Number.isFinite(duration)) {
+				countUp(counter, target, duration);
+			}
+		});
+
+		observer.unobserve(statsSection);
+	}, { threshold: 0.3 });
+
+	counterObserver.observe(statsSection);
+}
+
+function countUp(element, target, duration) {
+	const suffix = element.textContent.replace(String(target), "");
+
+	if (target === 0) {
+		element.textContent = `0${suffix}`;
+		return;
+	}
+
+	let start = 0;
+	const stepTime = Math.max(16, Math.floor(duration / target));
+	const timer = setInterval(() => {
+		start += 1;
+		element.textContent = `${start}${suffix}`;
+
+		if (start >= target) {
+			clearInterval(timer);
+		}
+	}, stepTime);
 }
