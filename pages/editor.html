@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelForge — Editor</title>
+  <meta name="description" content="PixelForge image editor — crop, filter, resize, enhance and export images directly in your browser." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/editor.css" />
+</head>
+<body class="editor-body">
+
+  <!-- ═══════════════════════════════════════
+       TOP BAR
+  ════════════════════════════════════════ -->
+  <header class="ed-topbar">
+
+    <!-- Left: logo + file info -->
+    <div class="ed-topbar__left">
+      <a href="/frontend/index.html" class="ed-logo" aria-label="Back to PixelForge home">
+        <img src="/assets/images/logo.png" alt="PixelForge" class="ed-logo__img" />
+      </a>
+      <div class="ed-file-info">
+        <span class="ed-file-name" id="edFileName">No file loaded</span>
+        <span class="ed-file-meta" id="edFileMeta">—</span>
+      </div>
+    </div>
+
+    <!-- Center: action buttons -->
+    <div class="ed-topbar__center">
+      <button class="ed-tb-btn" id="btnUndo" title="Undo (Ctrl+Z)" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+        Undo
+      </button>
+      <button class="ed-tb-btn" id="btnRedo" title="Redo (Ctrl+Y)" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+        Redo
+      </button>
+      <div class="ed-tb-sep"></div>
+      <button class="ed-tb-btn" id="btnReset" title="Reset to original">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.01"/></svg>
+        Reset
+      </button>
+    </div>
+
+    <!-- Right: zoom + export -->
+    <div class="ed-topbar__right">
+      <div class="ed-zoom-ctrl">
+        <button class="ed-tb-btn ed-tb-btn--icon" id="btnZoomOut" title="Zoom out">&#8722;</button>
+        <span class="ed-zoom-val" id="zoomVal">100%</span>
+        <button class="ed-tb-btn ed-tb-btn--icon" id="btnZoomIn" title="Zoom in">+</button>
+        <button class="ed-tb-btn ed-tb-btn--icon" id="btnZoomFit" title="Fit to window">&#10562;</button>
+      </div>
+      <div class="ed-tb-sep"></div>
+      <button class="ed-tb-btn ed-tb-btn--accent" id="btnExport">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ═══════════════════════════════════════
+       MAIN EDITOR SHELL
+  ════════════════════════════════════════ -->
+  <div class="ed-shell">
+
+    <!-- ───── LEFT PANEL — Tool palette ───── -->
+    <aside class="ed-panel ed-panel--left" id="leftPanel" aria-label="Tool palette">
+
+      <div class="ed-tool-group">
+        <span class="ed-group-label">Select</span>
+        <button class="ed-tool active" id="toolSelect" title="Select / Move (V)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-7 1-4 7z"/></svg>
+        </button>
+        <button class="ed-tool" id="toolCrop" title="Crop (C)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 2 6 18 22 18"/><polyline points="2 6 18 6 18 22"/></svg>
+        </button>
+      </div>
+
+      <div class="ed-tool-group">
+        <span class="ed-group-label">Draw</span>
+        <button class="ed-tool" id="toolBrush" title="Paint brush (B)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1 1 2.26 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+        </button>
+        <button class="ed-tool" id="toolEraser" title="Eraser (E)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 20 9 20"/><path d="M8.56 2.9A4 4 0 0 1 14.4 2.9l2.9 2.9a4 4 0 0 1 0 5.66l-8.48 8.48-6-6 5.73-11.03z"/></svg>
+        </button>
+        <button class="ed-tool" id="toolText" title="Add text (T)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        </button>
+      </div>
+
+      <div class="ed-tool-group">
+        <span class="ed-group-label">Transform</span>
+        <button class="ed-tool" id="toolRotateL" title="Rotate 90 left">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.01"/></svg>
+        </button>
+        <button class="ed-tool" id="toolFlipH" title="Flip horizontal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><line x1="12" y1="20" x2="12" y2="4"/></svg>
+        </button>
+        <button class="ed-tool" id="toolFlipV" title="Flip vertical">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+        </button>
+      </div>
+
+      <div class="ed-tool-group">
+        <span class="ed-group-label">View</span>
+        <button class="ed-tool" id="toolPixel" title="Pixel inspector (P)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="ed-tool" id="toolHistogram" title="Histogram (H)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ───── CENTER — Canvas area ───── -->
+    <main class="ed-canvas-area" id="canvasArea">
+
+      <!-- Empty state / upload prompt -->
+      <div class="ed-empty" id="edEmpty">
+        <div class="ed-empty__icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <h2 class="ed-empty__title">Drop an image to start editing</h2>
+        <p class="ed-empty__sub">JPG, PNG, GIF, WEBP, AVIF, BMP — up to 50 MB</p>
+        <label class="ed-empty__btn" for="fileUploadMain">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Browse files
+        </label>
+        <input type="file" id="fileUploadMain" accept=".jpg,.jpeg,.png,.gif,.webp,.avif,.bmp" hidden />
+        <p class="ed-empty__note">All processing happens locally — files never leave your device.</p>
+      </div>
+
+      <!-- Canvas (hidden until image loaded) -->
+      <canvas id="editorCanvas" class="ed-canvas" hidden aria-label="Image editor canvas"></canvas>
+
+      <!-- Canvas status bar -->
+      <div class="ed-statusbar" id="edStatusbar">
+        <span class="ed-status-item" id="statusDimensions">—</span>
+        <span class="ed-status-sep">·</span>
+        <span class="ed-status-item" id="statusFileSize">—</span>
+        <span class="ed-status-sep">·</span>
+        <span class="ed-status-item" id="statusCursor">x: — y: —</span>
+        <span class="ed-status-sep">·</span>
+        <span class="ed-status-item">
+          <span class="ed-color-swatch" id="statusColorSwatch"></span>
+          <span id="statusColorHex">—</span>
+        </span>
+      </div>
+
+    </main>
+
+    <!-- ───── RIGHT PANEL — Adjustments ───── -->
+    <aside class="ed-panel ed-panel--right" id="rightPanel" aria-label="Adjustments">
+
+      <!-- Histogram -->
+      <section class="ed-section" id="secHistogram">
+        <div class="ed-section__head">
+          <span class="ed-section__title">Histogram</span>
+          <div class="ed-channel-tabs">
+            <button class="ed-ch active" data-ch="all">ALL</button>
+            <button class="ed-ch" data-ch="r" style="color:#EF4444;">R</button>
+            <button class="ed-ch" data-ch="g" style="color:#22C55E;">G</button>
+            <button class="ed-ch" data-ch="b" style="color:#3B82F6;">B</button>
+          </div>
+        </div>
+        <div class="ed-histogram-wrap">
+          <canvas id="histogramCanvas" class="ed-histogram" width="220" height="80" aria-label="Histogram"></canvas>
+        </div>
+      </section>
+
+      <!-- Adjustments -->
+      <section class="ed-section" id="secAdjust">
+        <div class="ed-section__head">
+          <span class="ed-section__title">Adjustments</span>
+          <button class="ed-section__reset" id="resetAdjust" title="Reset adjustments">&#8634;</button>
+        </div>
+        <div class="ed-sliders">
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slBrightness">Brightness</label>
+            <input class="ed-slider" type="range" id="slBrightness" min="-100" max="100" value="0" />
+            <span class="ed-slider-val" id="slBrightnessVal">0</span>
+          </div>
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slContrast">Contrast</label>
+            <input class="ed-slider" type="range" id="slContrast" min="-100" max="100" value="0" />
+            <span class="ed-slider-val" id="slContrastVal">0</span>
+          </div>
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slSaturation">Saturation</label>
+            <input class="ed-slider" type="range" id="slSaturation" min="-100" max="100" value="0" />
+            <span class="ed-slider-val" id="slSaturationVal">0</span>
+          </div>
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slHue">Hue Rotate</label>
+            <input class="ed-slider" type="range" id="slHue" min="-180" max="180" value="0" />
+            <span class="ed-slider-val" id="slHueVal">0&#176;</span>
+          </div>
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slSharpness">Sharpness</label>
+            <input class="ed-slider" type="range" id="slSharpness" min="0" max="100" value="0" />
+            <span class="ed-slider-val" id="slSharpnessVal">0</span>
+          </div>
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slBlur">Blur</label>
+            <input class="ed-slider" type="range" id="slBlur" min="0" max="20" value="0" step="0.1" />
+            <span class="ed-slider-val" id="slBlurVal">0</span>
+          </div>
+          <div class="ed-slider-row">
+            <label class="ed-slider-label" for="slOpacity">Opacity</label>
+            <input class="ed-slider" type="range" id="slOpacity" min="0" max="100" value="100" />
+            <span class="ed-slider-val" id="slOpacityVal">100%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section class="ed-section" id="secFilters">
+        <div class="ed-section__head">
+          <span class="ed-section__title">Filters</span>
+        </div>
+        <div class="ed-filter-grid">
+          <button class="ed-filter active" data-filter="none">
+            <span class="ed-filter__preview ed-filter__preview--none"></span>
+            <span class="ed-filter__name">None</span>
+          </button>
+          <button class="ed-filter" data-filter="grayscale">
+            <span class="ed-filter__preview ed-filter__preview--gray"></span>
+            <span class="ed-filter__name">Grayscale</span>
+          </button>
+          <button class="ed-filter" data-filter="sepia">
+            <span class="ed-filter__preview ed-filter__preview--sepia"></span>
+            <span class="ed-filter__name">Sepia</span>
+          </button>
+          <button class="ed-filter" data-filter="invert">
+            <span class="ed-filter__preview ed-filter__preview--invert"></span>
+            <span class="ed-filter__name">Invert</span>
+          </button>
+          <button class="ed-filter" data-filter="vivid">
+            <span class="ed-filter__preview ed-filter__preview--vivid"></span>
+            <span class="ed-filter__name">Vivid</span>
+          </button>
+          <button class="ed-filter" data-filter="cool">
+            <span class="ed-filter__preview ed-filter__preview--cool"></span>
+            <span class="ed-filter__name">Cool</span>
+          </button>
+          <button class="ed-filter" data-filter="warm">
+            <span class="ed-filter__preview ed-filter__preview--warm"></span>
+            <span class="ed-filter__name">Warm</span>
+          </button>
+          <button class="ed-filter" data-filter="fade">
+            <span class="ed-filter__preview ed-filter__preview--fade"></span>
+            <span class="ed-filter__name">Fade</span>
+          </button>
+        </div>
+        <div class="ed-slider-row" style="margin-top:12px;">
+          <label class="ed-slider-label" for="slFilterIntensity">Intensity</label>
+          <input class="ed-slider" type="range" id="slFilterIntensity" min="0" max="100" value="100" />
+          <span class="ed-slider-val" id="slFilterIntensityVal">100%</span>
+        </div>
+      </section>
+
+      <!-- Resize -->
+      <section class="ed-section" id="secResize">
+        <div class="ed-section__head">
+          <span class="ed-section__title">Resize</span>
+        </div>
+        <div class="ed-resize-grid">
+          <div class="ed-field">
+            <label class="ed-field__label" for="resizeW">Width (px)</label>
+            <input class="ed-field__input" type="number" id="resizeW" placeholder="—" min="1" />
+          </div>
+          <div class="ed-field">
+            <label class="ed-field__label" for="resizeH">Height (px)</label>
+            <input class="ed-field__input" type="number" id="resizeH" placeholder="—" min="1" />
+          </div>
+        </div>
+        <label class="ed-checkbox-row">
+          <input type="checkbox" id="lockAspect" checked />
+          <span class="ed-checkbox-box"></span>
+          <span class="ed-checkbox-label">Lock aspect ratio</span>
+        </label>
+        <button class="ed-apply-btn" id="btnApplyResize">Apply Resize</button>
+      </section>
+
+      <!-- Export -->
+      <section class="ed-section" id="secExport">
+        <div class="ed-section__head">
+          <span class="ed-section__title">Export</span>
+        </div>
+        <div class="ed-field">
+          <label class="ed-field__label" for="exportFormat">Format</label>
+          <select class="ed-field__select" id="exportFormat">
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png" selected>PNG</option>
+            <option value="image/webp">WEBP</option>
+            <option value="image/avif">AVIF</option>
+          </select>
+        </div>
+        <div class="ed-slider-row" style="margin-top:10px;">
+          <label class="ed-slider-label" for="exportQuality">Quality</label>
+          <input class="ed-slider" type="range" id="exportQuality" min="10" max="100" value="90" />
+          <span class="ed-slider-val" id="exportQualityVal">90%</span>
+        </div>
+        <div class="ed-size-predictor" id="sizePredictor">
+          <div class="ed-size-row">
+            <span class="ed-size-label">Estimated size</span>
+            <span class="ed-size-val" id="sizeEstimate">—</span>
+          </div>
+          <div class="ed-size-row">
+            <span class="ed-size-label">Dimensions</span>
+            <span class="ed-size-val" id="sizeExportDim">—</span>
+          </div>
+        </div>
+        <button class="ed-apply-btn ed-apply-btn--accent" id="btnDownload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+        <!-- CSS filter code exporter -->
+        <div class="ed-code-export" id="cssExporter">
+          <div class="ed-section__head" style="margin-bottom:8px;">
+            <span class="ed-section__title" style="font-size:11px;">CSS Filter Code</span>
+            <button class="ed-section__reset" id="copyCssFilter" title="Copy to clipboard">&#8856; Copy</button>
+          </div>
+          <pre class="ed-code-block" id="cssFilterCode">filter: none;</pre>
+        </div>
+      </section>
+
+      <!-- Edit History -->
+      <section class="ed-section" id="secHistory">
+        <div class="ed-section__head">
+          <span class="ed-section__title">History</span>
+          <span class="ed-history-count" id="historyCount">0 steps</span>
+        </div>
+        <ol class="ed-history-list" id="historyList">
+          <li class="ed-history-item ed-history-item--empty">No edits yet</li>
+        </ol>
+      </section>
+
+    </aside>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="ed-modal-backdrop" id="exportModal" hidden>
+    <div class="ed-modal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+      <div class="ed-modal__head">
+        <h2 class="ed-modal__title" id="exportModalTitle">Export Image</h2>
+        <button class="ed-modal__close" id="closeExportModal" aria-label="Close">&#10005;</button>
+      </div>
+      <div class="ed-modal__body">
+        <div class="ed-export-grid">
+          <div class="ed-export-col">
+            <label class="ed-field__label">Choose format</label>
+            <div class="ed-format-btns">
+              <button class="ed-fmt-btn active" data-fmt="image/jpeg">JPG</button>
+              <button class="ed-fmt-btn" data-fmt="image/png">PNG</button>
+              <button class="ed-fmt-btn" data-fmt="image/webp">WEBP</button>
+              <button class="ed-fmt-btn" data-fmt="image/avif">AVIF</button>
+            </div>
+            <div class="ed-slider-row" style="margin-top:16px;">
+              <label class="ed-slider-label" for="modalQuality">Quality</label>
+              <input class="ed-slider" type="range" id="modalQuality" min="10" max="100" value="90" />
+              <span class="ed-slider-val" id="modalQualityVal">90%</span>
+            </div>
+          </div>
+          <div class="ed-export-col">
+            <label class="ed-field__label">Estimated file sizes</label>
+            <div class="ed-size-cards">
+              <div class="ed-size-card">
+                <span class="ed-size-card__fmt">JPG 60%</span>
+                <span class="ed-size-card__size" id="szJpg60">—</span>
+              </div>
+              <div class="ed-size-card">
+                <span class="ed-size-card__fmt">JPG 90%</span>
+                <span class="ed-size-card__size" id="szJpg90">—</span>
+              </div>
+              <div class="ed-size-card">
+                <span class="ed-size-card__fmt">PNG</span>
+                <span class="ed-size-card__size" id="szPng">—</span>
+              </div>
+              <div class="ed-size-card ed-size-card--highlight">
+                <span class="ed-size-card__fmt">WEBP 80%</span>
+                <span class="ed-size-card__size" id="szWebp">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ed-modal__foot">
+        <button class="ed-apply-btn" id="closeExportCancel">Cancel</button>
+        <button class="ed-apply-btn ed-apply-btn--accent" id="confirmDownload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
