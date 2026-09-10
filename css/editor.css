@@ -6,18 +6,6 @@
 
 /* ── Design tokens (same as landing) ── */
 :root {
-  --bg:          #F1EFEC;
-  --ink:         #16161A;
-  --ink-soft:    #55565C;
-  --line:        #D9D6CF;
-  --accent:      #3452FF;
-  --accent-ink:  #EDEFFF;
-  --panel:       #FFFFFF;
-  --mono:        'IBM Plex Mono', monospace;
-  --display:     'Space Grotesk', sans-serif;
-  --body:        'Inter', sans-serif;
-  --radius:      4px;
-
   /* Editor-specific */
   --tb-h:        52px;
   --left-w:      56px;

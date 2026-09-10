@@ -1,18 +1,3 @@
-:root{
-    --bg: #F1EFEC;
-    --ink: #16161A;
-    --ink-soft: #55565C;
-    --line: #D9D6CF;
-    --accent: #3452FF;
-    --accent-ink: #EDEFFF;
-    --panel: #FFFFFF;
-    --mono: 'IBM Plex Mono', monospace;
-    --display: 'Space Grotesk', sans-serif;
-    --body: 'Inter', sans-serif;
-    --radius: 4px;
-    --maxw: 1180px;
-  }
-
   * { margin:0; padding:0; box-sizing:border-box; }
 
   html { scroll-behavior:smooth; }

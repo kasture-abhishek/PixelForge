@@ -1,0 +1,57 @@
+:root {
+    /* Shared PixelForge theme tokens */
+    --bg: #F1EFEC;
+    --ink: #16161A;
+    --ink-soft: #55565C;
+    --line: #D9D6CF;
+    --accent: #3452FF;
+    --accent-ink: #EDEFFF;
+    --panel: #FFFFFF;
+    --mono: 'IBM Plex Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+    --radius: 4px;
+
+    /* Layout scale */
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --maxw: 1180px;
+
+    /* Backwards-compatible aliases for existing components */
+    --bg-primary-color: var(--bg);
+    --bg-secondary-color: var(--panel);
+    --bg-active-color: var(--accent-ink);
+    --bg-danger-color: #DC2626;
+    --bg-sucess-color: #15803D;
+    --text-primary-color: var(--ink);
+    --text-secondary-color: var(--ink-soft);
+    --text-tertiary-color: #8C887D;
+    --padding-sm: var(--space-sm);
+    --padding-md: var(--space-md);
+    --padding-lg: var(--space-lg);
+    --padding-xl: var(--space-xl);
+    --padding-2xl: var(--space-2xl);
+    --margin-sm: var(--space-sm);
+    --margin-md: var(--space-md);
+    --margin-lg: var(--space-lg);
+    --margin-xl: var(--space-xl);
+    --margin-2xl: var(--space-2xl);
+    --gutter-sm: var(--space-sm);
+    --gutter-md: var(--space-md);
+    --gutter-lg: var(--space-lg);
+    --gutter-xl: var(--space-xl);
+    --gutter-2xl: var(--space-2xl);
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --border-radius-sm: 0.25rem;
+    --border-radius-md: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-xl: 1rem;
+    --border-radius-2xl: 1.5rem;
+}
