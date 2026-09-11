@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/theme.css">
-<link rel="stylesheet" href="/css/landing.css">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
 
@@ -17,7 +17,7 @@
   <header>
     <nav class="wrap">
       <div class="logo">
-        <img src="/assets/images/logo.png"  class="brand-logo">
+        <img src="assets/images/logo.png" alt="PixelForge" class="brand-logo">
 
       </div>
       <div class="nav-links">
@@ -46,7 +46,7 @@
           <p>Or click to select file upload</p>
           <button class="btn btn-soft" id="browseBtn">Browse files</button>
           <small>Supports JPG, PNG, GIF, and WEBP formats, maximum size 50MB.</small>
-          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.gif,.webp" hidden />
+          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp" hidden />
           <div class="file-result" id="fileResult" aria-live="polite"></div>
         </div>
       </div>
@@ -60,7 +60,7 @@
           <div class="section-label">Powerful features</div>
           <h2>Every image tool you need, in one place.</h2>
         </div>
-        <p class="section-note">Merge, convert, compress, enhance, and secure your images — 100% free and browser-based.</p>
+        <p class="section-note">Adjust, filter, resize, and export your images — 100% free and browser-based.</p>
       </div>
 
       <!-- Category filter -->
@@ -72,32 +72,32 @@
         <div class="feat-card reveal" data-cat="organize">
           <div class="feat-icon" style="--ic:#F97316;">🗂️</div>
           <div class="feat-body">
-            <div class="feat-name">Batch Processing</div>
-            <div class="feat-desc">Process dozens of images at once — resize, compress, or convert in a single run.</div>
+            <div class="feat-name">Local Editing</div>
+            <div class="feat-desc">Open an image directly in your browser and keep the original file on your device.</div>
           </div>
         </div>
 
         <div class="feat-card reveal" data-cat="organize">
           <div class="feat-icon" style="--ic:#EAB308;">🔀</div>
           <div class="feat-body">
-            <div class="feat-name">Merge Images</div>
-            <div class="feat-desc">Combine multiple images into one canvas — side by side or stacked vertically.</div>
+            <div class="feat-name">Resize Images</div>
+            <div class="feat-desc">Set exact pixel dimensions with an optional locked aspect ratio.</div>
           </div>
         </div>
 
         <div class="feat-card reveal" data-cat="organize">
           <div class="feat-icon" style="--ic:#F97316;">✂️</div>
           <div class="feat-body">
-            <div class="feat-name">Smart Crop</div>
-            <div class="feat-desc">Crop with preset aspect ratios or free-hand — accurate to the pixel.</div>
+            <div class="feat-name">Reset Safely</div>
+            <div class="feat-desc">Return to the original image at any point while experimenting.</div>
           </div>
         </div>
 
         <div class="feat-card reveal" data-cat="organize">
           <div class="feat-icon" style="--ic:#DC2626;">🔄</div>
           <div class="feat-body">
-            <div class="feat-name">Rotate &amp; Flip</div>
-            <div class="feat-desc">Rotate by any angle or flip horizontally / vertically in one click.</div>
+            <div class="feat-name">Transform</div>
+            <div class="feat-desc">Rotate and flip images without uploading them to a server.</div>
           </div>
         </div>
 
@@ -105,32 +105,32 @@
         <div class="feat-card reveal" data-cat="optimize">
           <div class="feat-icon" style="--ic:#10B981;">⚡</div>
           <div class="feat-body">
-            <div class="feat-name">Compress Image</div>
-            <div class="feat-desc">Reduce file size while preserving maximum visual quality.</div>
+            <div class="feat-name">Adjust Light</div>
+            <div class="feat-desc">Tune brightness, contrast, saturation, hue, blur, and opacity.</div>
           </div>
         </div>
 
         <div class="feat-card reveal" data-cat="optimize">
           <div class="feat-icon" style="--ic:#0EA5E9;">⚙️</div>
           <div class="feat-body">
-            <div class="feat-name">Quality Control</div>
-            <div class="feat-desc">Fine-tune compression level and output quality before saving.</div>
+            <div class="feat-name">Export Quality</div>
+            <div class="feat-desc">Choose an output format and quality before downloading your result.</div>
           </div>
         </div>
 
         <div class="feat-card reveal" data-cat="optimize">
           <div class="feat-icon" style="--ic:#EAB308;">📐</div>
           <div class="feat-body">
-            <div class="feat-name">Image Dimensions</div>
-            <div class="feat-desc">Resize to exact pixel values or lock aspect ratio precisely.</div>
+            <div class="feat-name">Pixel Preview</div>
+            <div class="feat-desc">See dimensions and export information while you work.</div>
           </div>
         </div>
 
         <div class="feat-card reveal" data-cat="optimize">
           <div class="feat-icon" style="--ic:#10B981;">↩️</div>
           <div class="feat-body">
-            <div class="feat-name">Reset / Restore Original</div>
-            <div class="feat-desc">Instantly revert all edits back to the untouched source image.</div>
+            <div class="feat-name">Undo / Redo</div>
+            <div class="feat-desc">Step through committed edits with a clear history stack.</div>
           </div>
         </div>
 
@@ -439,7 +439,7 @@
       <div class="cta-avail">Your images. Your browser. No uploads.</div>
       <h2>Start editing — right now.</h2>
       <div class="cta-actions">
-        <a class="btn btn-primary" href="/pages/editor.html">Open the Editor →</a>
+        <a class="btn btn-primary" href="pages/editor.html">Open the Editor →</a>
       </div>
     </div>
   </section>

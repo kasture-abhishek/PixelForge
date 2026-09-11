@@ -23,8 +23,18 @@ if (menuToggle && mainNav && navActions) {
 	});
 }
 
-const acceptedFileTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const acceptedFileTypes = ["image/jpeg", "image/png", "image/webp"];
 const maxSize = 50 * 1024 * 1024;
+
+function openEditorWithFile(file) {
+	const request = indexedDB.open("pixelForge", 1);
+	request.onupgradeneeded = () => request.result.createObjectStore("pending");
+	request.onsuccess = () => {
+		const transaction = request.result.transaction("pending", "readwrite");
+		transaction.objectStore("pending").put(file, "upload");
+		transaction.oncomplete = () => { window.location.href = "pages/editor.html"; };
+	};
+}
 
 function updateFileMessage(message, isError = false) {
 	fileResult.textContent = message;
@@ -37,7 +47,7 @@ function validateAndShowFile(file) {
 	}
 
 	if (!acceptedFileTypes.includes(file.type)) {
-		updateFileMessage("Unsupported format. Use JPG, PNG, GIF, or WEBP.", true);
+		updateFileMessage("Unsupported format. Use JPG, PNG, or WEBP.", true);
 		return;
 	}
 
@@ -47,15 +57,18 @@ function validateAndShowFile(file) {
 	}
 
 	updateFileMessage(`Selected: ${file.name}`);
+	openEditorWithFile(file);
 }
 
 if (uploadBox && browseBtn && fileInput) {
 	browseBtn.addEventListener("click", (event) => {
 		event.preventDefault();
+		event.stopPropagation();
 		fileInput.click();
 	});
 
-	uploadBox.addEventListener("click", () => {
+	uploadBox.addEventListener("click", (event) => {
+		if (event.target === browseBtn) return;
 		fileInput.click();
 	});
 
