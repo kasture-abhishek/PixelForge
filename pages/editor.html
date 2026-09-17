@@ -27,6 +27,10 @@
         <span class="ed-file-name" id="edFileName">No file loaded</span>
         <span class="ed-file-meta" id="edFileMeta">—</span>
       </div>
+      <button class="ed-tb-btn ed-change-file" id="btnChangeImage" title="Choose a different image">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+        Change image
+      </button>
     </div>
 
     <!-- Center: action buttons -->
@@ -138,7 +142,9 @@
       </div>
 
       <!-- Canvas (hidden until image loaded) -->
-      <canvas id="editorCanvas" class="ed-canvas" hidden aria-label="Image editor canvas"></canvas>
+      <div class="ed-canvas-stage">
+        <canvas id="editorCanvas" class="ed-canvas" hidden aria-label="Image editor canvas"></canvas>
+      </div>
 
       <!-- Canvas status bar -->
       <div class="ed-statusbar" id="edStatusbar">

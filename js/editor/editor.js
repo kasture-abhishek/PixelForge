@@ -3,6 +3,7 @@ const context = canvas.getContext("2d");
 const fileInput = document.getElementById("fileUploadMain");
 const emptyState = document.getElementById("edEmpty");
 const statusBar = document.getElementById("edStatusbar");
+const canvasStage = document.querySelector(".ed-canvas-stage");
 
 const state = {
 	original: null,
@@ -101,6 +102,15 @@ function getFilterString() {
 	return selected ? selected : "none";
 }
 
+function getFitZoom() {
+	if (!state.original) return 1;
+	const availableWidth = Math.max(canvasStage.clientWidth - 32, 1);
+	const availableHeight = Math.max(canvasStage.clientHeight - 32, 1);
+	const imageWidth = state.width || state.original.naturalWidth;
+	const imageHeight = state.height || state.original.naturalHeight;
+	return Math.min(1, availableWidth / imageWidth, availableHeight / imageHeight);
+}
+
 function render() {
 	if (!state.original) return;
 	const rotated = Math.abs(state.rotation % 180) === 90;
@@ -124,7 +134,8 @@ function render() {
 	context.globalAlpha = state.opacity / 100;
 	context.drawImage(state.original, -width / 2, -height / 2, width, height);
 	context.restore();
-	canvas.style.transform = `scale(${state.zoom})`;
+	canvas.style.width = `${canvas.width * state.zoom}px`;
+	canvas.style.height = `${canvas.height * state.zoom}px`;
 	$("statusDimensions").textContent = `${canvas.width} × ${canvas.height}px`;
 	$("sizeExportDim").textContent = `${canvas.width} × ${canvas.height}px`;
 	$("sizeEstimate").textContent = "Calculated on export";
@@ -160,6 +171,11 @@ function loadFile(file) {
 		pushHistory("Original");
 		updateControls();
 		render();
+		requestAnimationFrame(() => {
+			state.zoom = getFitZoom();
+			render();
+			$("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
+		});
 	};
 	image.onerror = () => setStatus("This image could not be decoded by the browser.");
 	image.src = url;
@@ -204,6 +220,10 @@ function exportImage(format = $("exportFormat").value, quality = Number($("expor
 }
 
 fileInput.addEventListener("change", (event) => loadFile(event.target.files[0]));
+$("btnChangeImage").addEventListener("click", () => {
+	fileInput.value = "";
+	fileInput.click();
+});
 $("canvasArea").addEventListener("dragover", (event) => event.preventDefault());
 $("canvasArea").addEventListener("drop", (event) => { event.preventDefault(); loadFile(event.dataTransfer.files[0]); });
 
@@ -241,8 +261,6 @@ document.querySelectorAll(".ed-filter").forEach((button) => button.addEventListe
 	state.filter = button.dataset.filter;
 	commit(`${button.textContent.trim()} filter`);
 }));
-
-$("toolRotateL").addEventListener("click", () => { state.rotation = (state.rotation - 90) % 360; commit("Rotate left"); });
 $("toolFlipH").addEventListener("click", () => { state.flipX *= -1; commit("Flip horizontally"); });
 $("toolFlipV").addEventListener("click", () => { state.flipY *= -1; commit("Flip vertically"); });
 
@@ -251,7 +269,7 @@ $("btnRedo").addEventListener("click", () => { if (historyIndex < history.length
 $("btnReset").addEventListener("click", () => { if (state.original) restoreSnapshot(history[0]); history.splice(1); historyIndex = 0; updateHistoryUI(); });
 $("btnZoomIn").addEventListener("click", () => { state.zoom = Math.min(3, state.zoom + 0.1); render(); $("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`; });
 $("btnZoomOut").addEventListener("click", () => { state.zoom = Math.max(0.25, state.zoom - 0.1); render(); $("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`; });
-$("btnZoomFit").addEventListener("click", () => { state.zoom = 1; render(); $("zoomVal").textContent = "100%"; });
+$("btnZoomFit").addEventListener("click", () => { state.zoom = getFitZoom(); render(); $("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`; });
 $("btnDownload").addEventListener("click", () => exportImage());
 $("btnExport").addEventListener("click", () => { $("exportModal").hidden = false; });
 $("closeExportModal").addEventListener("click", () => { $("exportModal").hidden = true; });
@@ -268,6 +286,13 @@ document.addEventListener("keydown", (event) => {
 	if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") { event.preventDefault(); $("btnUndo").click(); }
 	if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") { event.preventDefault(); $("btnRedo").click(); }
 	if (event.key === "Escape") $("exportModal").hidden = true;
+});
+
+window.addEventListener("resize", () => {
+		if (!state.original) return;
+		state.zoom = getFitZoom();
+		render();
+		$("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
 });
 
 statusBar.hidden = true;
