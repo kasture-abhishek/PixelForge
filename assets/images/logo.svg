@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PixelForge">
+  <rect width="64" height="64" rx="12" fill="#16161A"/>
+  <rect x="12" y="12" width="16" height="16" fill="#3452FF"/>
+  <rect x="30" y="12" width="10" height="10" fill="#EDEFFF"/>
+  <rect x="42" y="12" width="10" height="22" fill="#3452FF"/>
+  <rect x="12" y="30" width="10" height="22" fill="#EDEFFF"/>
+  <rect x="24" y="36" width="16" height="16" fill="#3452FF"/>
+  <rect x="42" y="42" width="10" height="10" fill="#EDEFFF"/>
+</svg>
