@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhotoEdit - Online Image Editor</title>
+<title>PixelForge — In-browser image editor</title>
+<meta name="description" content="Edit images locally in your browser. Adjust, filter, crop, resize, and export as JPG, PNG, WEBP, or AVIF. No uploads.">
+<link rel="icon" href="assets/images/logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -12,20 +14,21 @@
 </head>
 <body>
 
-  
-
   <header>
     <nav class="wrap">
-      <div class="logo">
-        <img src="assets/images/logo.png" alt="PixelForge" class="brand-logo">
-
-      </div>
-      <div class="nav-links">
+      <a class="logo" href="index.html">
+        <img src="assets/images/logo.svg" alt="PixelForge" class="brand-logo">
+      </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-label="Open menu">Menu</button>
+      <div class="nav-links" id="mainNav">
         <a href="#work">Features</a>
         <a href="#workflow">How It Works</a>
         <a href="#formats">Formats</a>
+        <a href="pages/about.html">About</a>
       </div>
-      <a class="nav-cta" href="#cta">Start Editing</a>
+      <div class="nav-actions">
+        <a class="nav-cta" href="pages/editor.html">Start Editing</a>
+      </div>
     </nav>
   </header>
 
@@ -33,9 +36,9 @@
     <div class="hero-inner">
       <div class="wrap hero-copy">
         <h1>Advanced <span>Image Editing Made Simpler</span></h1>
-        <p class="hero-sub">Edit, enhance, resize, optimize, and convert your images with powerful tools—all directly in your browser.</p>
+        <p class="hero-sub">Edit, enhance, resize, and convert images with tools that run entirely in your browser.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#cta">Start editing</a>
+          <a class="btn btn-primary" href="pages/editor.html">Start editing</a>
           <a class="btn btn-ghost" href="#work">Explore Features</a>
         </div>
       </div>
@@ -45,8 +48,8 @@
           <h3>Drag and drop the image here</h3>
           <p>Or click to select file upload</p>
           <button class="btn btn-soft" id="browseBtn">Browse files</button>
-          <small>Supports JPG, PNG, GIF, and WEBP formats, maximum size 50MB.</small>
-          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp" hidden />
+          <small>JPG, PNG, WEBP, GIF, AVIF, BMP — maximum 50 MB.</small>
+          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.bmp,image/jpeg,image/png,image/webp,image/gif,image/avif,image/bmp" hidden />
           <div class="file-result" id="fileResult" aria-live="polite"></div>
         </div>
       </div>
@@ -57,19 +60,14 @@
     <div class="wrap">
       <div class="section-head reveal">
         <div>
-          <div class="section-label">Powerful features</div>
+          <div class="section-label">Available features</div>
           <h2>Every image tool you need, in one place.</h2>
         </div>
-        <p class="section-note">Adjust, filter, resize, and export your images — 100% free and browser-based.</p>
+        <p class="section-note">Adjust, filter, resize, and export — 100% free and browser-based.</p>
       </div>
 
-      <!-- Category filter -->
-     
-
       <div class="feat-grid" id="featGrid">
-
-        <!-- Organize -->
-        <div class="feat-card reveal" data-cat="organize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#F97316;">🗂️</div>
           <div class="feat-body">
             <div class="feat-name">Local Editing</div>
@@ -77,7 +75,7 @@
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="organize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#EAB308;">🔀</div>
           <div class="feat-body">
             <div class="feat-name">Resize Images</div>
@@ -85,90 +83,63 @@
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="organize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#F97316;">✂️</div>
           <div class="feat-body">
-            <div class="feat-name">Reset Safely</div>
-            <div class="feat-desc">Return to the original image at any point while experimenting.</div>
+            <div class="feat-name">Crop</div>
+            <div class="feat-desc">Drag a rectangle on the canvas and commit a crop without leaving the editor.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="organize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#DC2626;">🔄</div>
           <div class="feat-body">
             <div class="feat-name">Transform</div>
-            <div class="feat-desc">Rotate and flip images without uploading them to a server.</div>
+            <div class="feat-desc">Rotate left or right and flip images without uploading them to a server.</div>
           </div>
         </div>
 
-        <!-- Optimize -->
-        <div class="feat-card reveal" data-cat="optimize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#10B981;">⚡</div>
           <div class="feat-body">
             <div class="feat-name">Adjust Light</div>
-            <div class="feat-desc">Tune brightness, contrast, saturation, hue, blur, and opacity.</div>
+            <div class="feat-desc">Tune brightness, contrast, saturation, hue, sharpness, blur, and opacity.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="optimize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#0EA5E9;">⚙️</div>
           <div class="feat-body">
             <div class="feat-name">Export Quality</div>
-            <div class="feat-desc">Choose an output format and quality before downloading your result.</div>
+            <div class="feat-desc">Choose JPG, PNG, WEBP, or AVIF and preview estimated file size before download.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="optimize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#EAB308;">📐</div>
           <div class="feat-body">
             <div class="feat-name">Pixel Preview</div>
-            <div class="feat-desc">See dimensions and export information while you work.</div>
+            <div class="feat-desc">See cursor position, sampled color, and canvas dimensions while you work.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="optimize">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#10B981;">↩️</div>
           <div class="feat-body">
             <div class="feat-name">Undo / Redo</div>
-            <div class="feat-desc">Step through committed edits with a clear history stack.</div>
+            <div class="feat-desc">Step through committed edits with a history stack you can click into.</div>
           </div>
         </div>
 
-        <!-- Convert -->
-        <div class="feat-card reveal" data-cat="convert">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#7C3AED;">🖼️</div>
           <div class="feat-body">
-            <div class="feat-name">PNG / JPG / WebP</div>
-            <div class="feat-desc">Import and export in all major formats — lossless and lossy.</div>
+            <div class="feat-name">PNG / JPG / WEBP / AVIF</div>
+            <div class="feat-desc">Import common still-image formats and export in four browser-supported types.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="convert">
-          <div class="feat-icon" style="--ic:#6366F1;">📄</div>
-          <div class="feat-body">
-            <div class="feat-name">Image to PDF</div>
-            <div class="feat-desc">Pack one or many images into a neat, shareable PDF document.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="convert">
-          <div class="feat-icon" style="--ic:#EC4899;">📤</div>
-          <div class="feat-body">
-            <div class="feat-name">PDF to Image</div>
-            <div class="feat-desc">Extract every PDF page as a high-res PNG or JPG image instantly.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="convert">
-          <div class="feat-icon" style="--ic:#14B8A6;">🎞️</div>
-          <div class="feat-body">
-            <div class="feat-name">GIF / AVIF Support</div>
-            <div class="feat-desc">Convert to and from animated GIF or next-gen AVIF with ease.</div>
-          </div>
-        </div>
-
-        <!-- Edit -->
-        <div class="feat-card reveal" data-cat="edit">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#EC4899;">🎨</div>
           <div class="feat-body">
             <div class="feat-name">Filter Intensity</div>
@@ -176,105 +147,35 @@
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="edit">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#EAB308;">📊</div>
           <div class="feat-body">
             <div class="feat-name">Histogram</div>
-            <div class="feat-desc">Live RGB histogram — never blow out highlights or crush shadows.</div>
+            <div class="feat-desc">Live luminance and RGB histograms so you can watch highlights and shadows.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="edit">
-          <div class="feat-icon" style="--ic:#3452FF;">🕓</div>
-          <div class="feat-body">
-            <div class="feat-name">Edit History</div>
-            <div class="feat-desc">Full undo / redo stack — step backwards through every change.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="edit">
-          <div class="feat-icon" style="--ic:#64748B;">🌗</div>
-          <div class="feat-body">
-            <div class="feat-name">Dark / Light Themes</div>
-            <div class="feat-desc">Switch the editor UI to whichever mode suits your workspace.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="edit">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#14B8A6;">⌨️</div>
           <div class="feat-body">
             <div class="feat-name">Keyboard Shortcuts</div>
-            <div class="feat-desc">Speed through edits without lifting your hands off the keyboard.</div>
+            <div class="feat-desc">Undo, redo, and switch tools without leaving the keyboard.</div>
           </div>
         </div>
 
-        <div class="feat-card reveal" data-cat="edit">
-          <div class="feat-icon" style="--ic:#F97316;">💧</div>
-          <div class="feat-body">
-            <div class="feat-name">Add Watermark</div>
-            <div class="feat-desc">Stamp text or image watermarks anywhere on your photo with opacity control.</div>
-          </div>
-        </div>
-
-        <!-- AI Intelligence -->
-        <div class="feat-card reveal" data-cat="ai">
-          <div class="feat-icon" style="--ic:#6366F1;">✨</div>
-          <div class="feat-body">
-            <div class="feat-name">Auto Enhance</div>
-            <div class="feat-desc">One-click AI boost for lighting, contrast, and colour balance.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="ai">
-          <div class="feat-icon" style="--ic:#7C3AED;">🪄</div>
-          <div class="feat-body">
-            <div class="feat-name">AI Background Removal</div>
-            <div class="feat-desc">Remove backgrounds with AI precision in seconds — no green screen needed.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="ai">
-          <div class="feat-icon" style="--ic:#EC4899;">🔍</div>
-          <div class="feat-body">
-            <div class="feat-name">AI Upscale</div>
-            <div class="feat-desc">Enlarge images up to 4× without blurring, powered by super-resolution AI.</div>
-          </div>
-        </div>
-
-        <div class="feat-card reveal" data-cat="ai">
-          <div class="feat-icon" style="--ic:#10B981;">🌿</div>
-          <div class="feat-body">
-            <div class="feat-name">Noise Reduction</div>
-            <div class="feat-desc">AI denoiser cleans up grainy photos while preserving sharp detail.</div>
-          </div>
-        </div>
-
-        <!-- Security -->
-        <div class="feat-card reveal" data-cat="security">
+        <div class="feat-card reveal">
           <div class="feat-icon" style="--ic:#059669;">🔒</div>
           <div class="feat-body">
             <div class="feat-name">Privacy First</div>
-            <div class="feat-desc">All processing happens in your browser — nothing ever leaves your device.</div>
+            <div class="feat-desc">All processing happens in your browser — nothing is sent to a PixelForge server.</div>
           </div>
         </div>
-
-        <div class="feat-card reveal" data-cat="security">
-          <div class="feat-icon" style="--ic:#DC2626;">🛡️</div>
-          <div class="feat-body">
-            <div class="feat-name">Metadata Scrubbing</div>
-            <div class="feat-desc">Strip EXIF data — location, device info, and timestamps — before sharing.</div>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
 
-  <!-- #workflow: Option A (How It Works) + Option B (Format Badges) combined -->
   <section class="section" id="workflow">
     <div class="wrap">
-
-      <!-- Section header -->
       <div class="section-head reveal">
         <div>
           <div class="section-label">How it works</div>
@@ -283,38 +184,36 @@
         <p class="section-note">No account. No watermark. No servers.</p>
       </div>
 
-      <!-- Option A: 3-step cards with connector line -->
       <div class="steps-row reveal">
         <div class="step-card">
           <div class="step-num">01</div>
           <div class="step-icon">🖼</div>
           <div class="step-name">Drop your image</div>
-          <div class="step-desc">Drag-drop or browse. JPG, PNG, GIF, WEBP — up to 50 MB.</div>
+          <div class="step-desc">Drag-drop or browse. JPG, PNG, WEBP, GIF, AVIF, BMP — up to 50 MB.</div>
         </div>
         <div class="step-connector" aria-hidden="true"></div>
         <div class="step-card">
           <div class="step-num">02</div>
           <div class="step-icon">🎨</div>
           <div class="step-name">Pick your tools</div>
-          <div class="step-desc">Adjust, filter, crop, convert — all live in-browser, zero uploads.</div>
+          <div class="step-desc">Adjust, filter, crop, resize — all live in-browser, zero uploads.</div>
         </div>
         <div class="step-connector" aria-hidden="true"></div>
         <div class="step-card">
           <div class="step-num">03</div>
           <div class="step-icon">⬇</div>
           <div class="step-name">Export &amp; Download</div>
-          <div class="step-desc">Save as any format. Files stay on your device the entire time.</div>
+          <div class="step-desc">Save as JPG, PNG, WEBP, or AVIF. Files stay on your device.</div>
         </div>
       </div>
 
-      <!-- Honest stats -->
       <div class="stats reveal">
         <div>
-          <strong data-target="25" data-duration="1500">25+</strong>
+          <strong data-target="16" data-duration="1500">16+</strong>
           <span>Built-in tools</span>
         </div>
         <div>
-          <strong data-target="6" data-duration="1700">6</strong>
+          <strong data-target="4" data-duration="1700">4</strong>
           <span>Export formats</span>
         </div>
         <div>
@@ -323,22 +222,18 @@
         </div>
       </div>
 
-      <!-- Option B: Format Support Showcase (enhanced) -->
       <div class="formats-wrap reveal" id="formats">
-
         <div class="formats-header">
           <div>
             <div class="section-label" style="margin-bottom:6px;">Format support</div>
             <div class="formats-title">What goes in. What comes out.</div>
           </div>
-          <p class="formats-note">PixelForge reads 7 formats and writes 6 — all processed locally, never uploaded.</p>
+          <p class="formats-note">PixelForge reads 6 still-image formats and writes 4 — processed locally, never uploaded.</p>
         </div>
 
         <div class="formats-divider"></div>
 
-        <!-- Per-format rows -->
         <div class="formats-table">
-
           <div class="fmt-row">
             <span class="fmt-badge fmt-in">JPG</span>
             <span class="fmt-type lossy">Lossy</span>
@@ -348,7 +243,6 @@
               <span class="fmt-out">PNG</span>
               <span class="fmt-out">WEBP</span>
               <span class="fmt-out">AVIF</span>
-              <span class="fmt-out">PDF</span>
             </div>
           </div>
 
@@ -361,7 +255,6 @@
               <span class="fmt-out">JPG</span>
               <span class="fmt-out">WEBP</span>
               <span class="fmt-out">AVIF</span>
-              <span class="fmt-out">PDF</span>
             </div>
           </div>
 
@@ -369,12 +262,11 @@
             <span class="fmt-badge fmt-in">WEBP</span>
             <span class="fmt-type modern">Modern</span>
             <span class="fmt-arrow">→</span>
-            <span class="fmt-desc">Web-optimised images, smaller than JPG &amp; PNG</span>
+            <span class="fmt-desc">Web-optimised images, often smaller than JPG and PNG</span>
             <div class="fmt-out-pills">
               <span class="fmt-out">JPG</span>
               <span class="fmt-out">PNG</span>
               <span class="fmt-out">AVIF</span>
-              <span class="fmt-out">PDF</span>
             </div>
           </div>
 
@@ -382,32 +274,19 @@
             <span class="fmt-badge fmt-in">AVIF</span>
             <span class="fmt-type modern">Next-gen</span>
             <span class="fmt-arrow">→</span>
-            <span class="fmt-desc">Smallest file size, HDR &amp; wide colour support</span>
+            <span class="fmt-desc">Small files when the browser can decode AVIF</span>
             <div class="fmt-out-pills">
               <span class="fmt-out">JPG</span>
               <span class="fmt-out">PNG</span>
               <span class="fmt-out">WEBP</span>
-              <span class="fmt-out">PDF</span>
             </div>
           </div>
 
           <div class="fmt-row">
             <span class="fmt-badge fmt-in">GIF</span>
-            <span class="fmt-type animated">Animated</span>
+            <span class="fmt-type animated">Still frame</span>
             <span class="fmt-arrow">→</span>
-            <span class="fmt-desc">Animated images, frame-by-frame previews</span>
-            <div class="fmt-out-pills">
-              <span class="fmt-out">JPG</span>
-              <span class="fmt-out">PNG</span>
-              <span class="fmt-out">WEBP</span>
-            </div>
-          </div>
-
-          <div class="fmt-row">
-            <span class="fmt-badge fmt-in">PDF</span>
-            <span class="fmt-type document">Document</span>
-            <span class="fmt-arrow">→</span>
-            <span class="fmt-desc">Extract pages as high-res images instantly</span>
+            <span class="fmt-desc">Opens the first frame as a still image — animation is not preserved</span>
             <div class="fmt-out-pills">
               <span class="fmt-out">JPG</span>
               <span class="fmt-out">PNG</span>
@@ -426,11 +305,8 @@
               <span class="fmt-out">WEBP</span>
             </div>
           </div>
-
         </div>
       </div>
-
-
     </div>
   </section>
 
@@ -446,16 +322,15 @@
 
   <footer>
     <div class="wrap">
-      <div>© 2026 Studio</div>
+      <div>© 2026 PixelForge</div>
       <div class="socials">
-        <a href="#">Twitter</a>
-        <a href="#">Instagram</a>
-        <a href="#">LinkedIn</a>
+        <a href="pages/about.html">About</a>
+        <a href="pages/editor.html">Editor</a>
       </div>
     </div>
   </footer>
 
-  <script src="/js/script.js"></script>
+  <script type="module" src="js/script.js"></script>
   <script>
     const revealEls = document.querySelectorAll('.reveal');
     const io = new IntersectionObserver((entries) => {

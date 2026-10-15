@@ -45,8 +45,8 @@
     gap:8px;
   }
   .brand-logo{
-    width: 100px;
-    height: 100px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
     display: block;
   }
@@ -64,6 +64,19 @@
     color: var(--ink-soft);
   }
   .nav-links a:hover{ color: var(--ink); }
+  .nav-actions{ display:flex; align-items:center; }
+  .menu-toggle{
+    display:none;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
   .nav-cta{
     font-size: 13px;
     font-weight: 600;
@@ -619,10 +632,6 @@
     text-align:center;
     isolation: isolate;
     background-color: var(--bg);
-    background-image: linear-gradient(rgba(241,239,236,0.46), rgba(241,239,236,0.46)), url('/assets/images/among-us.png');
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
     overflow: hidden;
   }
   .cta::before{
@@ -680,7 +689,35 @@
 
   /* ---------- responsive ---------- */
   @media (max-width: 860px){
-    .nav-links{ display:none; }
+    nav.wrap{ position: relative; }
+    .menu-toggle{ display:inline-flex; }
+    .nav-links{
+      display:none;
+      position:absolute;
+      top: 72px;
+      left: 32px;
+      right: 32px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      z-index: 60;
+    }
+    .nav-links.open,
+    .nav-actions.open{ display:flex; }
+    .nav-actions{
+      display:none;
+    }
+    .nav-actions.open{
+      position:absolute;
+      top: 220px;
+      left: 32px;
+      right: 32px;
+      z-index: 60;
+    }
     .work-grid, .testi-grid{ grid-template-columns: 1fr; }
     .feat-grid{ grid-template-columns: repeat(2, 1fr); }
     .stats{ grid-template-columns: 1fr; gap: 36px; }
