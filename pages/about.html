@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — PixelForge</title>
+  <meta name="description" content="PixelForge is a static, in-browser image editor. Files stay on your device." />
+  <link rel="icon" href="../assets/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/landing.css" />
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <a class="logo" href="../index.html">
+        <img src="../assets/images/logo.svg" alt="PixelForge" class="brand-logo" />
+      </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-label="Open menu">Menu</button>
+      <div class="nav-links" id="mainNav">
+        <a href="../index.html#work">Features</a>
+        <a href="../index.html#workflow">How It Works</a>
+        <a href="../index.html#formats">Formats</a>
+      </div>
+      <div class="nav-actions">
+        <a class="nav-cta" href="editor.html">Open Editor</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="section-label">About</div>
+          <h2>A local image editor, not a cloud app.</h2>
+        </div>
+        <p class="section-note">Static HTML, CSS, and JavaScript. No account and no server-side processing.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="--ic:#3452FF;">🔒</div>
+          <div class="feat-body">
+            <div class="feat-name">Privacy</div>
+            <div class="feat-desc">Images are decoded and drawn in your browser. PixelForge does not upload files to a backend because it does not have one.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="--ic:#10B981;">🛠️</div>
+          <div class="feat-body">
+            <div class="feat-name">Scope</div>
+            <div class="feat-desc">Adjustments, filters, crop, resize, transform, drawing, histogram, and four export formats. It is not an AI suite and it does not convert PDFs.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="--ic:#F97316;">📂</div>
+          <div class="feat-body">
+            <div class="feat-name">Limits</div>
+            <div class="feat-desc">Maximum file size is 50 MB. Animated GIFs open as a still frame. AVIF export works only when the browser supports it.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 PixelForge</div>
+      <div class="socials">
+        <a href="../index.html">Home</a>
+        <a href="editor.html">Editor</a>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="../js/script.js"></script>
+</body>
+</html>
