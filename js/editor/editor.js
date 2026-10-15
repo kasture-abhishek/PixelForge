@@ -1,9 +1,19 @@
+import { formatBytes, isAcceptedImage, MAX_IMAGE_BYTES } from "../utils/fileUtils.js";
+import { canvasToBlob, downloadBlob, extensionForMime } from "../utils/download.js";
+import { canvasPoint, fitZoom, hexFromPixel } from "../utils/imageUtils.js";
+import { buildFilterString } from "../features/filters.js";
+import { applySharpen, DEFAULT_ADJUSTMENTS } from "../features/adjustments.js";
+import { drawHistogram } from "../features/histogram.js";
+import { pairedHeight, pairedWidth } from "../features/resize.js";
+import { estimateSizes } from "../features/conversion.js";
+
 const canvas = document.getElementById("editorCanvas");
-const context = canvas.getContext("2d");
+const context = canvas.getContext("2d", { willReadFrequently: true });
 const fileInput = document.getElementById("fileUploadMain");
 const emptyState = document.getElementById("edEmpty");
 const statusBar = document.getElementById("edStatusbar");
 const canvasStage = document.querySelector(".ed-canvas-stage");
+const cropRect = document.getElementById("cropRect");
 
 const state = {
 	original: null,
@@ -13,6 +23,7 @@ const state = {
 	contrast: 0,
 	saturation: 0,
 	hue: 0,
+	sharpness: 0,
 	blur: 0,
 	opacity: 100,
 	filter: "none",
@@ -22,13 +33,21 @@ const state = {
 	rotation: 0,
 	flipX: 1,
 	flipY: 1,
+	activeTool: "select",
+	crop: null,
+	strokes: [],
+	texts: [],
+	histogramChannel: "all",
 };
 
 const history = [];
+const originalStack = [];
 let historyIndex = -1;
+let aspectRatio = 1;
+let estimateTimer = 0;
 
 const $ = (id) => document.getElementById(id);
-const sliderNames = ["Brightness", "Contrast", "Saturation", "Hue", "Blur", "Opacity", "FilterIntensity"];
+const sliderNames = ["Brightness", "Contrast", "Saturation", "Hue", "Sharpness", "Blur", "Opacity", "FilterIntensity"];
 
 function setStatus(message) {
 	const status = $("edFileMeta");
@@ -36,19 +55,26 @@ function setStatus(message) {
 }
 
 function cloneState() {
-	return Object.fromEntries(Object.entries(state).filter(([key]) => key !== "original" && key !== "file"));
+	return Object.fromEntries(Object.entries(state)
+		.filter(([key]) => key !== "original" && key !== "file")
+		.map(([key, value]) => [key, Array.isArray(value) ? structuredClone(value) : value]));
 }
 
-function restoreSnapshot(snapshot) {
+function restoreSnapshot(snapshot, index = historyIndex) {
 	Object.assign(state, snapshot);
+	if (originalStack[index]) state.original = originalStack[index];
 	updateControls();
 	render();
 }
 
 function pushHistory(label) {
 	const snapshot = { ...cloneState(), label };
-	if (historyIndex < history.length - 1) history.splice(historyIndex + 1);
+	if (historyIndex < history.length - 1) {
+		history.splice(historyIndex + 1);
+		originalStack.splice(historyIndex + 1);
+	}
 	history.push(snapshot);
+	originalStack.push(state.original);
 	historyIndex = history.length - 1;
 	updateHistoryUI();
 }
@@ -66,10 +92,17 @@ function updateHistoryUI() {
 		list.append(empty);
 		return;
 	}
-	history.slice(1).forEach((entry, index) => {
+	history.forEach((entry, index) => {
+		if (index === 0) return;
 		const item = document.createElement("li");
-		item.className = `ed-history-item${index + 1 === historyIndex ? " active" : ""}`;
+		item.className = `ed-history-item${index === historyIndex ? " active" : ""}`;
 		item.textContent = entry.label;
+		item.tabIndex = 0;
+		item.addEventListener("click", () => {
+			historyIndex = index;
+			restoreSnapshot(history[historyIndex], historyIndex);
+			updateHistoryUI();
+		});
 		list.append(item);
 	});
 }
@@ -80,6 +113,7 @@ function updateControls() {
 		Contrast: state.contrast,
 		Saturation: state.saturation,
 		Hue: state.hue,
+		Sharpness: state.sharpness,
 		Blur: state.blur,
 		Opacity: state.opacity,
 		FilterIntensity: state.filterIntensity,
@@ -93,61 +127,102 @@ function updateControls() {
 	}
 	$("resizeW").value = state.width || "";
 	$("resizeH").value = state.height || "";
-	$("cssFilterCode").textContent = `filter: ${getFilterString()};`;
-}
-
-function getFilterString() {
-	const filterMap = { grayscale: "grayscale(1)", sepia: "sepia(1)", invert: "invert(1)", vivid: "saturate(1.8) contrast(1.1)", cool: "hue-rotate(20deg) saturate(1.1)", warm: "sepia(.25) saturate(1.25)", fade: "contrast(.85) brightness(1.08)" };
-	const selected = filterMap[state.filter];
-	return selected ? selected : "none";
+	$("cssFilterCode").textContent = `filter: ${buildFilterString(state)};`;
+	document.querySelectorAll(".ed-filter").forEach((button) => {
+		button.classList.toggle("active", button.dataset.filter === state.filter);
+	});
+	document.querySelectorAll(".ed-ch").forEach((button) => {
+		button.classList.toggle("active", button.dataset.ch === state.histogramChannel);
+	});
 }
 
 function getFitZoom() {
 	if (!state.original) return 1;
-	const availableWidth = Math.max(canvasStage.clientWidth - 32, 1);
-	const availableHeight = Math.max(canvasStage.clientHeight - 32, 1);
 	const imageWidth = state.width || state.original.naturalWidth;
 	const imageHeight = state.height || state.original.naturalHeight;
-	return Math.min(1, availableWidth / imageWidth, availableHeight / imageHeight);
+	const rotated = Math.abs(state.rotation % 180) === 90;
+	return fitZoom(canvasStage, rotated ? imageHeight : imageWidth, rotated ? imageWidth : imageHeight);
 }
 
 function render() {
 	if (!state.original) return;
 	const rotated = Math.abs(state.rotation % 180) === 90;
-	const width = state.width || state.original.naturalWidth;
-	const height = state.height || state.original.naturalHeight;
+	const destWidth = state.width || state.original.naturalWidth;
+	const destHeight = state.height || state.original.naturalHeight;
+	const crop = state.crop || { x: 0, y: 0, width: state.original.naturalWidth, height: state.original.naturalHeight };
+	const width = destWidth;
+	const height = destHeight;
 	canvas.width = rotated ? height : width;
 	canvas.height = rotated ? width : height;
-	context.save();
 	context.clearRect(0, 0, canvas.width, canvas.height);
-	context.translate(canvas.width / 2, canvas.height / 2);
-	context.rotate(state.rotation * Math.PI / 180);
-	context.scale(state.flipX, state.flipY);
-	context.filter = [
-		`brightness(${100 + state.brightness}%)`,
-		`contrast(${100 + state.contrast}%)`,
-		`saturate(${100 + state.saturation}%)`,
-		`hue-rotate(${state.hue}deg)`,
-		`blur(${state.blur}px)`,
-		getFilterString(),
-	].join(" ");
-	context.globalAlpha = state.opacity / 100;
-	context.drawImage(state.original, -width / 2, -height / 2, width, height);
-	context.restore();
+
+	const drawImage = (targetContext) => {
+		targetContext.save();
+		targetContext.translate(canvas.width / 2, canvas.height / 2);
+		targetContext.rotate(state.rotation * Math.PI / 180);
+		targetContext.scale(state.flipX, state.flipY);
+		targetContext.globalAlpha = state.opacity / 100;
+		targetContext.drawImage(state.original, crop.x, crop.y, crop.width, crop.height, -width / 2, -height / 2, width, height);
+		targetContext.restore();
+	};
+
+	if (state.filterIntensity < 100) {
+		drawImage(context);
+		const filteredCanvas = document.createElement("canvas");
+		filteredCanvas.width = canvas.width;
+		filteredCanvas.height = canvas.height;
+		const filteredContext = filteredCanvas.getContext("2d");
+		filteredContext.filter = buildFilterString(state);
+		drawImage(filteredContext);
+		context.globalAlpha = state.filterIntensity / 100;
+		context.drawImage(filteredCanvas, 0, 0);
+		context.globalAlpha = 1;
+	} else {
+		context.filter = buildFilterString(state);
+		drawImage(context);
+	}
+	context.filter = "none";
+	applySharpen(context, canvas, state.sharpness);
+	drawStrokes();
+	drawTexts();
 	canvas.style.width = `${canvas.width * state.zoom}px`;
 	canvas.style.height = `${canvas.height * state.zoom}px`;
 	$("statusDimensions").textContent = `${canvas.width} × ${canvas.height}px`;
 	$("sizeExportDim").textContent = `${canvas.width} × ${canvas.height}px`;
-	$("sizeEstimate").textContent = "Calculated on export";
 	updateHistogram();
+	scheduleSizeEstimate();
+}
+
+function drawStrokes() {
+	state.strokes.forEach((stroke) => {
+		if (stroke.points.length < 2) return;
+		context.save();
+		context.globalCompositeOperation = stroke.tool === "eraser" ? "destination-out" : "source-over";
+		context.strokeStyle = stroke.tool === "eraser" ? "rgba(0,0,0,1)" : "#ef4444";
+		context.lineWidth = stroke.size;
+		context.lineCap = "round";
+		context.lineJoin = "round";
+		context.beginPath();
+		stroke.points.forEach(([x, y], index) => index ? context.lineTo(x, y) : context.moveTo(x, y));
+		context.stroke();
+		context.restore();
+	});
+}
+
+function drawTexts() {
+	context.save();
+	context.fillStyle = "#ef4444";
+	context.font = "bold 32px Space Grotesk, sans-serif";
+	state.texts.forEach((text) => context.fillText(text.value, text.x, text.y));
+	context.restore();
 }
 
 function loadFile(file) {
-	if (!file || !file.type.startsWith("image/")) {
+	if (!isAcceptedImage(file)) {
 		setStatus("Please choose a supported image file.");
 		return;
 	}
-	if (file.size > 50 * 1024 * 1024) {
+	if (file.size > MAX_IMAGE_BYTES) {
 		setStatus("File is larger than the 50 MB limit.");
 		return;
 	}
@@ -159,14 +234,19 @@ function loadFile(file) {
 		state.file = file;
 		state.width = image.naturalWidth;
 		state.height = image.naturalHeight;
+		aspectRatio = image.naturalWidth / image.naturalHeight || 1;
 		state.zoom = 1;
-		Object.assign(state, { brightness: 0, contrast: 0, saturation: 0, hue: 0, blur: 0, opacity: 100, filter: "none", filterIntensity: 100, rotation: 0, flipX: 1, flipY: 1 });
+		Object.assign(state, DEFAULT_ADJUSTMENTS, { rotation: 0, flipX: 1, flipY: 1 });
+		state.crop = null;
+		state.strokes = [];
+		state.texts = [];
 		$("edFileName").textContent = file.name;
 		setStatus(`${formatBytes(file.size)} · local processing`);
 		emptyState.hidden = true;
 		canvas.hidden = false;
 		statusBar.hidden = false;
 		history.length = 0;
+		originalStack.length = 0;
 		historyIndex = -1;
 		pushHistory("Original");
 		updateControls();
@@ -181,24 +261,29 @@ function loadFile(file) {
 	image.src = url;
 }
 
-function formatBytes(bytes) {
-	if (!bytes) return "0 B";
-	const units = ["B", "KB", "MB", "GB"];
-	const unit = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-	return `${(bytes / 1024 ** unit).toFixed(unit ? 1 : 0)} ${units[unit]}`;
-}
-
 function updateHistogram() {
 	const histogram = $("histogramCanvas");
 	if (!state.original || !histogram) return;
-	const histogramContext = histogram.getContext("2d");
-	histogramContext.clearRect(0, 0, histogram.width, histogram.height);
-	histogramContext.fillStyle = "#8ba0b8";
-	const sample = context.getImageData(0, 0, canvas.width, canvas.height).data;
-	const bins = new Array(32).fill(0);
-	for (let index = 0; index < sample.length; index += 4) bins[Math.floor(((sample[index] + sample[index + 1] + sample[index + 2]) / 3) / 8)] += 1;
-	const max = Math.max(...bins, 1);
-	bins.forEach((value, index) => histogramContext.fillRect(index * 7, histogram.height, 6, -(value / max) * histogram.height));
+	drawHistogram(histogram, context.getImageData(0, 0, canvas.width, canvas.height), state.histogramChannel);
+}
+
+function scheduleSizeEstimate() {
+	$("sizeEstimate").textContent = "Estimating…";
+	clearTimeout(estimateTimer);
+	estimateTimer = setTimeout(updateSizeEstimates, 280);
+}
+
+async function updateSizeEstimates() {
+	if (!state.original) return;
+	const format = $("exportFormat").value;
+	const quality = Number($("exportQuality").value) / 100;
+	const current = await canvasToBlob(canvas, format, quality);
+	$("sizeEstimate").textContent = current ? formatBytes(current.size) : "Unavailable";
+	const sizes = await estimateSizes(canvas);
+	$("szJpg60").textContent = sizes.jpg60;
+	$("szJpg90").textContent = sizes.jpg90;
+	$("szPng").textContent = sizes.png;
+	$("szWebp").textContent = sizes.webp;
 }
 
 function commit(label) {
@@ -206,17 +291,65 @@ function commit(label) {
 	render();
 }
 
-function exportImage(format = $("exportFormat").value, quality = Number($("exportQuality").value) / 100) {
+function selectTool(tool) {
+	state.activeTool = tool;
+	document.querySelectorAll(".ed-tool[data-tool]").forEach((button) => button.classList.toggle("active", button.dataset.tool === tool));
+	canvas.style.cursor = tool === "brush" || tool === "eraser" || tool === "crop" || tool === "pixel" ? "crosshair" : tool === "text" ? "text" : "default";
+	setStatus(`${tool[0].toUpperCase() + tool.slice(1)} tool selected`);
+}
+
+function setCropOverlay(start, point) {
+	if (!cropRect) return;
+	const bounds = canvas.getBoundingClientRect();
+	const wrapBounds = $("canvasWrap").getBoundingClientRect();
+	const left = Math.min(start.clientX, point.clientX) - wrapBounds.left;
+	const top = Math.min(start.clientY, point.clientY) - wrapBounds.top;
+	const width = Math.abs(point.clientX - start.clientX);
+	const height = Math.abs(point.clientY - start.clientY);
+	cropRect.hidden = false;
+	cropRect.style.left = `${Math.max(0, Math.min(left, bounds.width))}px`;
+	cropRect.style.top = `${Math.max(0, Math.min(top, bounds.height))}px`;
+	cropRect.style.width = `${width}px`;
+	cropRect.style.height = `${height}px`;
+}
+
+function hideCropOverlay() {
+	if (!cropRect) return;
+	cropRect.hidden = true;
+	cropRect.style.width = "0";
+	cropRect.style.height = "0";
+}
+
+function bakeCrop(x, y, width, height) {
+	const baked = document.createElement("canvas");
+	baked.width = Math.max(1, Math.round(width));
+	baked.height = Math.max(1, Math.round(height));
+	baked.getContext("2d").drawImage(canvas, x, y, width, height, 0, 0, baked.width, baked.height);
+	const image = new Image();
+	image.onload = () => {
+		state.original = image;
+		state.width = image.naturalWidth;
+		state.height = image.naturalHeight;
+		aspectRatio = state.width / state.height || 1;
+		state.crop = null;
+		state.rotation = 0;
+		state.flipX = 1;
+		state.flipY = 1;
+		state.strokes = [];
+		state.texts = [];
+		Object.assign(state, DEFAULT_ADJUSTMENTS);
+		updateControls();
+		commit("Crop image");
+	};
+	image.src = baked.toDataURL("image/png");
+}
+
+async function exportImage(format = $("exportFormat").value, quality = Number($("exportQuality").value) / 100) {
 	if (!state.original) return setStatus("Load an image before exporting.");
-	canvas.toBlob((blob) => {
-		if (!blob) return setStatus(`The browser cannot export ${format}.`);
-		const link = document.createElement("a");
-		link.href = URL.createObjectURL(blob);
-		link.download = `pixelforge-${Date.now()}.${format.split("/")[1] === "jpeg" ? "jpg" : format.split("/")[1]}`;
-		link.click();
-		URL.revokeObjectURL(link.href);
-		setStatus(`${formatBytes(blob.size)} exported locally`);
-	}, format, quality);
+	const blob = await canvasToBlob(canvas, format, quality);
+	if (!blob) return setStatus(`The browser cannot export ${format}.`);
+	downloadBlob(blob, `pixelforge-${Date.now()}.${extensionForMime(format)}`);
+	setStatus(`${formatBytes(blob.size)} exported locally`);
 }
 
 fileInput.addEventListener("change", (event) => loadFile(event.target.files[0]));
@@ -224,8 +357,16 @@ $("btnChangeImage").addEventListener("click", () => {
 	fileInput.value = "";
 	fileInput.click();
 });
-$("canvasArea").addEventListener("dragover", (event) => event.preventDefault());
-$("canvasArea").addEventListener("drop", (event) => { event.preventDefault(); loadFile(event.dataTransfer.files[0]); });
+$("canvasArea").addEventListener("dragover", (event) => {
+	event.preventDefault();
+	emptyState.classList.add("drag-over");
+});
+$("canvasArea").addEventListener("dragleave", () => emptyState.classList.remove("drag-over"));
+$("canvasArea").addEventListener("drop", (event) => {
+	event.preventDefault();
+	emptyState.classList.remove("drag-over");
+	loadFile(event.dataTransfer.files[0]);
+});
 
 function loadPendingFile() {
 	const request = indexedDB.open("pixelForge", 1);
@@ -261,38 +402,209 @@ document.querySelectorAll(".ed-filter").forEach((button) => button.addEventListe
 	state.filter = button.dataset.filter;
 	commit(`${button.textContent.trim()} filter`);
 }));
+
+document.querySelectorAll(".ed-tool[data-tool]").forEach((button) => button.addEventListener("click", () => selectTool(button.dataset.tool)));
+$("toolRotateL").addEventListener("click", () => {
+	if (state.original) {
+		state.rotation = (state.rotation - 90 + 360) % 360;
+		commit("Rotate left");
+	}
+});
+$("toolRotateR").addEventListener("click", () => {
+	if (state.original) {
+		state.rotation = (state.rotation + 90) % 360;
+		commit("Rotate right");
+	}
+});
 $("toolFlipH").addEventListener("click", () => { state.flipX *= -1; commit("Flip horizontally"); });
 $("toolFlipV").addEventListener("click", () => { state.flipY *= -1; commit("Flip vertically"); });
+$("toolHistogram").addEventListener("click", () => {
+	const section = $("secHistogram");
+	section.hidden = !section.hidden;
+});
 
-$("btnUndo").addEventListener("click", () => { if (historyIndex > 0) restoreSnapshot(history[--historyIndex]); updateHistoryUI(); });
-$("btnRedo").addEventListener("click", () => { if (historyIndex < history.length - 1) restoreSnapshot(history[++historyIndex]); updateHistoryUI(); });
-$("btnReset").addEventListener("click", () => { if (state.original) restoreSnapshot(history[0]); history.splice(1); historyIndex = 0; updateHistoryUI(); });
+document.querySelectorAll(".ed-ch").forEach((button) => button.addEventListener("click", () => {
+	state.histogramChannel = button.dataset.ch;
+	updateControls();
+	updateHistogram();
+}));
+
+$("resetAdjust").addEventListener("click", () => {
+	if (!state.original) return;
+	Object.assign(state, {
+		brightness: 0,
+		contrast: 0,
+		saturation: 0,
+		hue: 0,
+		sharpness: 0,
+		blur: 0,
+		opacity: 100,
+	});
+	updateControls();
+	commit("Reset adjustments");
+});
+
+let pointerStart = null;
+canvas.addEventListener("pointerdown", (event) => {
+	if (!state.original) return;
+	const point = canvasPoint(canvas, event);
+	canvas.setPointerCapture(event.pointerId);
+	if (state.activeTool === "brush" || state.activeTool === "eraser") {
+		pointerStart = { ...point, stroke: { tool: state.activeTool, size: state.activeTool === "eraser" ? 40 : 12, points: [[point.x, point.y]] } };
+		state.strokes.push(pointerStart.stroke);
+	} else if (state.activeTool === "crop" || state.activeTool === "pixel") {
+		pointerStart = point;
+	}
+	if (state.activeTool === "text") {
+		const value = window.prompt("Enter text to add:");
+		if (value?.trim()) {
+			state.texts.push({ value: value.trim(), x: point.x, y: point.y });
+			commit("Add text");
+		}
+		pointerStart = null;
+	}
+});
+canvas.addEventListener("pointermove", (event) => {
+	if (!state.original) return;
+	const point = canvasPoint(canvas, event);
+	$("statusCursor").textContent = `x: ${Math.round(point.x)} y: ${Math.round(point.y)}`;
+	if (state.activeTool === "pixel") {
+		const pixel = context.getImageData(Math.min(canvas.width - 1, Math.floor(point.x)), Math.min(canvas.height - 1, Math.floor(point.y)), 1, 1).data;
+		$("statusColorHex").textContent = hexFromPixel(pixel);
+		$("statusColorSwatch").style.background = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+	}
+	if (!pointerStart) return;
+	if (pointerStart.stroke) {
+		pointerStart.stroke.points.push([point.x, point.y]);
+		render();
+	} else if (state.activeTool === "crop") {
+		setCropOverlay(pointerStart, point);
+	}
+});
+canvas.addEventListener("pointerup", (event) => {
+	if (!pointerStart) return;
+	const point = canvasPoint(canvas, event);
+	if (state.activeTool === "crop" && !pointerStart.stroke) {
+		const x = Math.min(pointerStart.x, point.x);
+		const y = Math.min(pointerStart.y, point.y);
+		const width = Math.abs(point.x - pointerStart.x);
+		const height = Math.abs(point.y - pointerStart.y);
+		hideCropOverlay();
+		if (width > 4 && height > 4) bakeCrop(x, y, width, height);
+	} else if (pointerStart.stroke) {
+		commit(`${state.activeTool[0].toUpperCase() + state.activeTool.slice(1)} stroke`);
+	}
+	pointerStart = null;
+});
+
+$("btnUndo").addEventListener("click", () => {
+	if (historyIndex > 0) restoreSnapshot(history[--historyIndex], historyIndex);
+	updateHistoryUI();
+});
+$("btnRedo").addEventListener("click", () => {
+	if (historyIndex < history.length - 1) restoreSnapshot(history[++historyIndex], historyIndex);
+	updateHistoryUI();
+});
+$("btnReset").addEventListener("click", () => {
+	if (state.original && history[0]) {
+		history.splice(1);
+		originalStack.splice(1);
+		historyIndex = 0;
+		restoreSnapshot(history[0], 0);
+		updateHistoryUI();
+	}
+});
 $("btnZoomIn").addEventListener("click", () => { state.zoom = Math.min(3, state.zoom + 0.1); render(); $("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`; });
 $("btnZoomOut").addEventListener("click", () => { state.zoom = Math.max(0.25, state.zoom - 0.1); render(); $("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`; });
 $("btnZoomFit").addEventListener("click", () => { state.zoom = getFitZoom(); render(); $("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`; });
 $("btnDownload").addEventListener("click", () => exportImage());
-$("btnExport").addEventListener("click", () => { $("exportModal").hidden = false; });
+$("btnExport").addEventListener("click", () => {
+	$("exportModal").hidden = false;
+	updateSizeEstimates();
+});
 $("closeExportModal").addEventListener("click", () => { $("exportModal").hidden = true; });
 $("closeExportCancel").addEventListener("click", () => { $("exportModal").hidden = true; });
-$("confirmDownload").addEventListener("click", () => { exportImage($("exportModal").querySelector(".ed-fmt-btn.active").dataset.fmt, Number($("modalQuality").value) / 100); $("exportModal").hidden = true; });
-document.querySelectorAll(".ed-fmt-btn").forEach((button) => button.addEventListener("click", () => { document.querySelectorAll(".ed-fmt-btn").forEach((item) => item.classList.remove("active")); button.classList.add("active"); }));
+$("confirmDownload").addEventListener("click", () => {
+	exportImage($("exportModal").querySelector(".ed-fmt-btn.active").dataset.fmt, Number($("modalQuality").value) / 100);
+	$("exportModal").hidden = true;
+});
+document.querySelectorAll(".ed-fmt-btn").forEach((button) => button.addEventListener("click", () => {
+	document.querySelectorAll(".ed-fmt-btn").forEach((item) => item.classList.remove("active"));
+	button.classList.add("active");
+}));
+$("exportFormat").addEventListener("change", updateSizeEstimates);
+$("exportQuality").addEventListener("input", () => {
+	$("exportQualityVal").textContent = `${$("exportQuality").value}%`;
+	scheduleSizeEstimate();
+});
+$("modalQuality").addEventListener("input", () => {
+	$("modalQualityVal").textContent = `${$("modalQuality").value}%`;
+});
+
+$("resizeW").addEventListener("input", () => {
+	if (!$("lockAspect").checked) return;
+	const width = Number($("resizeW").value);
+	if (width > 0) $("resizeH").value = pairedHeight(width, aspectRatio);
+});
+$("resizeH").addEventListener("input", () => {
+	if (!$("lockAspect").checked) return;
+	const height = Number($("resizeH").value);
+	if (height > 0) $("resizeW").value = pairedWidth(height, aspectRatio);
+});
 $("btnApplyResize").addEventListener("click", () => {
 	const width = Number($("resizeW").value);
 	const height = Number($("resizeH").value);
-	if (width > 0 && height > 0) { state.width = width; state.height = height; commit(`Resize to ${width} × ${height}`); }
+	if (width > 0 && height > 0) {
+		state.width = width;
+		state.height = height;
+		aspectRatio = width / height;
+		commit(`Resize to ${width} × ${height}`);
+	}
 });
-$("copyCssFilter").addEventListener("click", async () => { await navigator.clipboard?.writeText($("cssFilterCode").textContent); setStatus("CSS filter copied"); });
+$("copyCssFilter").addEventListener("click", async () => {
+	await navigator.clipboard?.writeText($("cssFilterCode").textContent);
+	setStatus("CSS filter copied");
+});
+$("btnTogglePanel").addEventListener("click", () => {
+	$("rightPanel").classList.toggle("is-open");
+});
+
 document.addEventListener("keydown", (event) => {
-	if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") { event.preventDefault(); $("btnUndo").click(); }
-	if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") { event.preventDefault(); $("btnRedo").click(); }
-	if (event.key === "Escape") $("exportModal").hidden = true;
+	if (event.target.matches("input, textarea, select")) return;
+	const key = event.key.toLowerCase();
+	if ((event.ctrlKey || event.metaKey) && key === "z") {
+		event.preventDefault();
+		$("btnUndo").click();
+		return;
+	}
+	if ((event.ctrlKey || event.metaKey) && key === "y") {
+		event.preventDefault();
+		$("btnRedo").click();
+		return;
+	}
+	if (event.key === "Escape") {
+		$("exportModal").hidden = true;
+		$("rightPanel").classList.remove("is-open");
+		hideCropOverlay();
+		return;
+	}
+	if (event.ctrlKey || event.metaKey) return;
+	const tools = { v: "select", c: "crop", b: "brush", e: "eraser", t: "text", p: "pixel" };
+	if (tools[key]) {
+		event.preventDefault();
+		selectTool(tools[key]);
+	}
+	if (key === "h") {
+		event.preventDefault();
+		$("toolHistogram").click();
+	}
 });
 
 window.addEventListener("resize", () => {
-		if (!state.original) return;
-		state.zoom = getFitZoom();
-		render();
-		$("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
+	if (!state.original) return;
+	state.zoom = getFitZoom();
+	render();
+	$("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
 });
 
 statusBar.hidden = true;

@@ -66,7 +66,7 @@ input, select { font-family: inherit; }
 
 /* Logo */
 .ed-logo { display: flex; align-items: center; }
-.ed-logo__img { width: 60px; height: 60px; object-fit: contain; }
+.ed-logo__img { width: 36px; height: 36px; object-fit: contain; }
 
 /* File info */
 .ed-file-info {
@@ -254,6 +254,22 @@ input, select { font-family: inherit; }
   display: grid;
   place-items: center;
   overflow: hidden;
+}
+.ed-canvas-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  max-height: 100%;
+}
+.ed-crop-rect {
+  position: absolute;
+  border: 1.5px dashed var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+.ed-history-item {
+  cursor: pointer;
 }
 
 /* Empty state */
@@ -812,10 +828,75 @@ input, select { font-family: inherit; }
   :root {
     --right-w: 220px;
   }
+  .ed-topbar__left,
+  .ed-topbar__center,
+  .ed-topbar__right {
+    min-width: 0;
+  }
 }
+#btnTogglePanel { display: none; }
 @media (max-width: 680px) {
-  .ed-panel--right { display: none; }
+  .ed-panel--right {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 30;
+    box-shadow: -8px 0 24px rgba(20, 20, 26, 0.12);
+    background: var(--panel-bg);
+  }
+  .ed-panel--right.is-open { display: block; }
+  #btnTogglePanel { display: inline-flex; }
+  .ed-shell { position: relative; }
   .ed-export-grid  { grid-template-columns: 1fr; }
-  .ed-topbar__center .ed-tb-btn span { display: none; }
+  .ed-topbar {
+    height: auto;
+    min-height: var(--tb-h);
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding: 0 8px;
+  }
+  .ed-topbar__left {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .ed-topbar__center {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: center;
+    padding-bottom: 4px;
+  }
+  .ed-topbar__center .ed-tb-btn {
+    font-size: 0;
+    padding: 6px 8px;
+  }
   .ed-file-info { display: none; }
+  .ed-change-file {
+    margin-left: 4px;
+    padding: 6px 8px;
+    font-size: 0;
+  }
+  .ed-topbar__right {
+    flex: 0 0 auto;
+  }
+  .ed-topbar__right > .ed-tb-btn {
+    font-size: 0;
+    padding: 7px 10px;
+  }
+}
+@media (max-width: 480px) {
+  :root {
+    --left-w: 48px;
+  }
+  .ed-panel--left {
+    padding-top: 4px;
+  }
+  .ed-tool {
+    width: 32px;
+    height: 32px;
+  }
+  .ed-group-label {
+    font-size: 7px;
+  }
 }
