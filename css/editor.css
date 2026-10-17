@@ -60,6 +60,7 @@ input, select { font-family: inherit; }
   display: flex;
   align-items: center;
   gap: 6px;
+  position: relative;
 }
 .ed-topbar__left  { flex: 1; }
 .ed-topbar__right { flex: 1; justify-content: flex-end; }

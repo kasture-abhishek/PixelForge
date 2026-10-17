@@ -7,7 +7,7 @@
 <meta name="description" content="Edit images locally in your browser. Adjust, filter, crop, resize, and export as JPG, PNG, WEBP, or AVIF. No uploads.">
 <link rel="icon" href="assets/images/logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/landing.css">
@@ -49,7 +49,7 @@
           <p>Or click to select file upload</p>
           <button class="btn btn-soft" id="browseBtn">Browse files</button>
           <small>JPG, PNG, WEBP, GIF, AVIF, BMP — maximum 50 MB.</small>
-          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.bmp,image/jpeg,image/png,image/webp,image/gif,image/avif,image/bmp" hidden />
+          <input type="file" id="fileInput" class="sr-file" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.bmp,image/jpeg,image/png,image/webp,image/gif,image/avif,image/bmp" />
           <div class="file-result" id="fileResult" aria-live="polite"></div>
         </div>
       </div>

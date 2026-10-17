@@ -28,10 +28,11 @@
         <span class="ed-file-name" id="edFileName">No file loaded</span>
         <span class="ed-file-meta" id="edFileMeta">—</span>
       </div>
-      <button class="ed-tb-btn ed-change-file" id="btnChangeImage" title="Choose a different image">
+      <button class="ed-tb-btn ed-change-file" id="btnChangeImage" type="button" title="Choose a different image">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
         Change image
       </button>
+      <input type="file" id="fileUploadMain" class="sr-file" accept=".jpg,.jpeg,.png,.gif,.webp,.avif,.bmp,image/jpeg,image/png,image/gif,image/webp,image/avif,image/bmp" />
     </div>
 
     <!-- Center: action buttons -->
@@ -142,7 +143,6 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Browse files
         </label>
-        <input type="file" id="fileUploadMain" accept=".jpg,.jpeg,.png,.gif,.webp,.avif,.bmp" hidden />
         <p class="ed-empty__note">All processing happens locally — files never leave your device.</p>
       </div>
 

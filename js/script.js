@@ -1,4 +1,5 @@
 import { isAcceptedImage, MAX_IMAGE_BYTES } from "./utils/fileUtils.js";
+import { savePendingFile } from "./utils/pendingUpload.js";
 
 const menuToggle = document.getElementById("menuToggle");
 const mainNav = document.getElementById("mainNav");
@@ -40,21 +41,11 @@ function updateFileMessage(message, isError = false) {
 }
 
 function openEditorWithFile(file) {
-	const request = indexedDB.open("pixelForge", 1);
-	request.onerror = () => {
+	savePendingFile(file).then(() => {
+		window.location.href = editorHref();
+	}).catch(() => {
 		updateFileMessage("Could not store the file. Open the editor and choose it there.", true);
-	};
-	request.onupgradeneeded = () => request.result.createObjectStore("pending");
-	request.onsuccess = () => {
-		const transaction = request.result.transaction("pending", "readwrite");
-		transaction.objectStore("pending").put(file, "upload");
-		transaction.oncomplete = () => {
-			window.location.href = editorHref();
-		};
-		transaction.onerror = () => {
-			updateFileMessage("Could not store the file. Open the editor and choose it there.", true);
-		};
-	};
+	});
 }
 
 function validateAndShowFile(file) {
@@ -91,7 +82,9 @@ if (uploadBox && browseBtn && fileInput) {
 	});
 
 	fileInput.addEventListener("change", (event) => {
-		validateAndShowFile(event.target.files[0]);
+		const file = event.target.files[0];
+		event.target.value = "";
+		validateAndShowFile(file);
 	});
 
 	["dragenter", "dragover"].forEach((eventName) => {

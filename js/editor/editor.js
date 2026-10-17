@@ -1,4 +1,5 @@
 import { formatBytes, isAcceptedImage, MAX_IMAGE_BYTES } from "../utils/fileUtils.js";
+import { takePendingFile } from "../utils/pendingUpload.js";
 import { canvasToBlob, downloadBlob, extensionForMime } from "../utils/download.js";
 import { canvasPoint, fitZoom, hexFromPixel } from "../utils/imageUtils.js";
 import { buildFilterString } from "../features/filters.js";
