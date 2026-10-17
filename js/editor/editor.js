@@ -7,7 +7,7 @@ import { applySharpen, DEFAULT_ADJUSTMENTS } from "../features/adjustments.js";
 import { drawHistogram } from "../features/histogram.js";
 import { pairedHeight, pairedWidth } from "../features/resize.js";
 import { estimateSizes } from "../features/conversion.js";
-import { drawStrokes, drawTexts, bakeCrop as bakeCropUtil } from "./canvas.js";
+import { drawStrokes as drawStrokesUtil, drawTexts as drawTextsUtil, bakeCrop as bakeCropUtil } from "./canvas.js";
 import { cloneState, pushHistoryEntry, initialHistoryState } from "./history.js";
 import { setupKeyboardHandlers } from "./keyboard.js";
 
@@ -66,14 +66,8 @@ function restoreSnapshot(snapshot, index = historyIndex) {
 }
 
 function pushHistory(label) {
-	const snapshot = { ...cloneState(), label };
-	if (historyIndex < history.length - 1) {
-		history.splice(historyIndex + 1);
-		originalStack.splice(historyIndex + 1);
-	}
-	history.push(snapshot);
-	originalStack.push(state.original);
-	historyIndex = history.length - 1;
+	const snapshot = { ...cloneState(state), label };
+	historyIndex = pushHistoryEntry(history, originalStack, historyIndex, snapshot, state.original);
 	updateHistoryUI();
 }
 
@@ -192,27 +186,11 @@ function render() {
 }
 
 function drawStrokes() {
-	state.strokes.forEach((stroke) => {
-		if (stroke.points.length < 2) return;
-		context.save();
-		context.globalCompositeOperation = stroke.tool === "eraser" ? "destination-out" : "source-over";
-		context.strokeStyle = stroke.tool === "eraser" ? "rgba(0,0,0,1)" : "#ef4444";
-		context.lineWidth = stroke.size;
-		context.lineCap = "round";
-		context.lineJoin = "round";
-		context.beginPath();
-		stroke.points.forEach(([x, y], index) => index ? context.lineTo(x, y) : context.moveTo(x, y));
-		context.stroke();
-		context.restore();
-	});
+	drawStrokesUtil(context, state.strokes);
 }
 
 function drawTexts() {
-	context.save();
-	context.fillStyle = "#ef4444";
-	context.font = "bold 32px Space Grotesk, sans-serif";
-	state.texts.forEach((text) => context.fillText(text.value, text.x, text.y));
-	context.restore();
+	drawTextsUtil(context, state.texts);
 }
 
 function loadFile(file) {
@@ -319,10 +297,7 @@ function hideCropOverlay() {
 }
 
 function bakeCrop(x, y, width, height) {
-	const baked = document.createElement("canvas");
-	baked.width = Math.max(1, Math.round(width));
-	baked.height = Math.max(1, Math.round(height));
-	baked.getContext("2d").drawImage(canvas, x, y, width, height, 0, 0, baked.width, baked.height);
+	const baked = bakeCropUtil(canvas, x, y, width, height);
 	const image = new Image();
 	image.onload = () => {
 		state.original = image;
@@ -562,35 +537,27 @@ $("btnTogglePanel").addEventListener("click", () => {
 	$("rightPanel").classList.toggle("is-open");
 });
 
-document.addEventListener("keydown", (event) => {
-	if (event.target.matches("input, textarea, select")) return;
-	const key = event.key.toLowerCase();
-	if ((event.ctrlKey || event.metaKey) && key === "z") {
-		event.preventDefault();
-		$("btnUndo").click();
-		return;
-	}
-	if ((event.ctrlKey || event.metaKey) && key === "y") {
-		event.preventDefault();
-		$("btnRedo").click();
-		return;
-	}
-	if (event.key === "Escape") {
+setupKeyboardHandlers({
+	onInput: (target) => target.matches("input, textarea, select"),
+	onUndo: () => {
+		if (historyIndex > 0) restoreSnapshot(history[--historyIndex], historyIndex);
+		updateHistoryUI();
+	},
+	onRedo: () => {
+		if (historyIndex < history.length - 1) restoreSnapshot(history[++historyIndex], historyIndex);
+		updateHistoryUI();
+	},
+	onEscape: () => {
 		$("exportModal").hidden = true;
 		$("rightPanel").classList.remove("is-open");
 		hideCropOverlay();
-		return;
-	}
-	if (event.ctrlKey || event.metaKey) return;
-	const tools = { v: "select", c: "crop", b: "brush", e: "eraser", t: "text", p: "pixel" };
-	if (tools[key]) {
-		event.preventDefault();
-		selectTool(tools[key]);
-	}
-	if (key === "h") {
-		event.preventDefault();
+	},
+	onTool: (tool) => {
+		selectTool(tool);
+	},
+	onHistogram: () => {
 		$("toolHistogram").click();
-	}
+	},
 });
 
 window.addEventListener("resize", () => {
