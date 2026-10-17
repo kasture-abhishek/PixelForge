@@ -370,19 +370,14 @@ $("canvasArea").addEventListener("drop", (event) => {
 });
 
 function loadPendingFile() {
-	const request = indexedDB.open("pixelForge", 1);
-	request.onupgradeneeded = () => request.result.createObjectStore("pending");
-	request.onsuccess = () => {
-		const transaction = request.result.transaction("pending", "readwrite");
-		const store = transaction.objectStore("pending");
-		const fileRequest = store.get("upload");
-		fileRequest.onsuccess = () => {
-			if (fileRequest.result) {
-				loadFile(fileRequest.result);
-				store.delete("upload");
-			}
-		};
-	};
+	takePendingFile().then((file) => {
+		if (file) {
+			loadFile(file);
+		}
+	}).catch((error) => {
+		setStatus("Could not restore pending image. Open the editor and choose a file.");
+		console.error("Pending file load failed:", error);
+	});
 }
 
 for (const name of sliderNames) {
