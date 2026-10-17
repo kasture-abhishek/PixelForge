@@ -7,6 +7,9 @@ import { applySharpen, DEFAULT_ADJUSTMENTS } from "../features/adjustments.js";
 import { drawHistogram } from "../features/histogram.js";
 import { pairedHeight, pairedWidth } from "../features/resize.js";
 import { estimateSizes } from "../features/conversion.js";
+import { drawStrokes, drawTexts, bakeCrop as bakeCropUtil } from "./canvas.js";
+import { cloneState, pushHistoryEntry, initialHistoryState } from "./history.js";
+import { setupKeyboardHandlers } from "./keyboard.js";
 
 const canvas = document.getElementById("editorCanvas");
 const context = canvas.getContext("2d", { willReadFrequently: true });
@@ -53,12 +56,6 @@ const sliderNames = ["Brightness", "Contrast", "Saturation", "Hue", "Sharpness",
 function setStatus(message) {
 	const status = $("edFileMeta");
 	if (status) status.textContent = message;
-}
-
-function cloneState() {
-	return Object.fromEntries(Object.entries(state)
-		.filter(([key]) => key !== "original" && key !== "file")
-		.map(([key, value]) => [key, Array.isArray(value) ? structuredClone(value) : value]));
 }
 
 function restoreSnapshot(snapshot, index = historyIndex) {
