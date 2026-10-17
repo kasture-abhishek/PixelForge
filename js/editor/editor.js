@@ -1,5 +1,5 @@
 import { formatBytes, isAcceptedImage, MAX_IMAGE_BYTES } from "../utils/fileUtils.js";
-import { takePendingFile } from "../utils/pendingUpload.js";
+import { takePendingFile, saveRecentFile, getRecentFiles, removeRecentFile } from "../utils/pendingUpload.js";
 import { canvasToBlob, downloadBlob, extensionForMime } from "../utils/download.js";
 import { canvasPoint, fitZoom, hexFromPixel } from "../utils/imageUtils.js";
 import { buildFilterString } from "../features/filters.js";
@@ -18,6 +18,9 @@ const emptyState = document.getElementById("edEmpty");
 const statusBar = document.getElementById("edStatusbar");
 const canvasStage = document.querySelector(".ed-canvas-stage");
 const cropRect = document.getElementById("cropRect");
+const recentDropdown = document.getElementById("recentDropdown");
+const recentList = document.getElementById("recentList");
+const recentEmpty = document.getElementById("recentEmpty");
 
 const state = {
 	original: null,
@@ -42,6 +45,7 @@ const state = {
 	strokes: [],
 	texts: [],
 	histogramChannel: "all",
+	recentImages: [],
 };
 
 const history = [];
@@ -349,6 +353,68 @@ function loadPendingFile() {
 	}).catch((error) => {
 		setStatus("Could not restore pending image. Open the editor and choose a file.");
 		console.error("Pending file load failed:", error);
+	});
+}
+
+function renderRecentImages() {
+	if (!recentList || !recentEmpty) return;
+	recentList.replaceChildren();
+	if (state.recentImages.length === 0) {
+		recentEmpty.hidden = false;
+		return;
+	}
+	recentEmpty.hidden = true;
+	state.recentImages.forEach((entry) => {
+		const li = document.createElement("li");
+		li.className = "ed-recent-item";
+		li.dataset.name = entry.name;
+		li.innerHTML = `
+			<span class="ed-recent-item__name">${entry.name}</span>
+			<span class="ed-recent-item__size">${formatBytes(entry.size)}</span>
+			<button class="ed-recent-item__remove" title="Remove from recent">&#10005;</button>
+		`;
+		const removeBtn = li.querySelector(".ed-recent-item__remove");
+		removeBtn.addEventListener("click", (event) => {
+			event.stopPropagation();
+			removeRecentImage(entry.name);
+		});
+		li.addEventListener("click", () => {
+			loadFile(entry.file);
+			recentDropdown.hidden = true;
+		});
+		recentList.appendChild(li);
+	});
+}
+
+async function saveToRecent(file) {
+	try {
+		await saveRecentFile(file);
+		const recent = await getRecentFiles();
+		state.recentImages = recent;
+		renderRecentImages();
+	} catch (err) {
+		console.warn("Could not save to recent:", err);
+	}
+}
+
+async function removeRecentImage(name) {
+	try {
+		await removeRecentFile(name);
+		const recent = await getRecentFiles();
+		state.recentImages = recent;
+		renderRecentImages();
+	} catch (err) {
+		console.warn("Could not remove from recent:", err);
+	}
+}
+
+function initRecentImages() {
+	getRecentFiles().then((recent) => {
+		state.recentImages = recent;
+		renderRecentImages();
+	}).catch(() => {
+		state.recentImages = [];
+		renderRecentImages();
 	});
 }
 

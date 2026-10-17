@@ -97,6 +97,103 @@ input, select { font-family: inherit; }
   border-color: var(--accent);
 }
 
+/* Recent images dropdown */
+.ed-recent-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 260px;
+  max-width: 320px;
+  max-height: 300px;
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(20, 20, 26, 0.16);
+  z-index: 45;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+}
+.ed-recent-dropdown[hidden] { display: none; }
+.ed-recent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.ed-recent-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+}
+.ed-recent-clear {
+  font-size: 10px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink-soft);
+  background: transparent;
+  cursor: pointer;
+}
+.ed-recent-clear:hover { border-color: var(--ink); color: var(--ink); }
+.ed-recent-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 240px;
+}
+.ed-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ed-recent-item:last-child { border-bottom: none; }
+.ed-recent-item:hover { background: var(--hover-bg); }
+.ed-recent-item__name {
+  flex: 1;
+  font-size: 11px;
+  color: var(--ink);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ed-recent-item__size {
+  font-size: 10px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+}
+.ed-recent-item__remove {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ed-recent-item__remove:hover { background: var(--hover-bg); border-color: var(--line); color: var(--ink); }
+.ed-recent-empty {
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+}
+
 /* Toolbar buttons */
 .ed-tb-btn {
   display: inline-flex;

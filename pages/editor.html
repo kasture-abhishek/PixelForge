@@ -32,6 +32,18 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
         Change image
       </button>
+      <button class="ed-tb-btn ed-change-file" id="btnRecentImages" type="button" title="Recent images">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Recent
+      </button>
+      <div class="ed-recent-dropdown" id="recentDropdown" hidden>
+        <div class="ed-recent-head">
+          <span class="ed-recent-title">Recent images</span>
+          <button class="ed-recent-clear" id="btnClearRecent" title="Clear recent">Clear</button>
+        </div>
+        <ul class="ed-recent-list" id="recentList"></ul>
+        <div class="ed-recent-empty" id="recentEmpty" hidden>No recent images</div>
+      </div>
       <input type="file" id="fileUploadMain" class="sr-file" accept=".jpg,.jpeg,.png,.gif,.webp,.avif,.bmp,image/jpeg,image/png,image/gif,image/webp,image/avif,image/bmp" />
     </div>
 
