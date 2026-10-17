@@ -8,7 +8,7 @@ import { drawHistogram } from "../features/histogram.js";
 import { pairedHeight, pairedWidth } from "../features/resize.js";
 import { estimateSizes } from "../features/conversion.js";
 import { drawStrokes as drawStrokesUtil, drawTexts as drawTextsUtil, bakeCrop as bakeCropUtil } from "./canvas.js";
-import { cloneState, pushHistoryEntry, initialHistoryState } from "./history.js";
+import { cloneState, pushHistoryEntry } from "./history.js";
 import { setupKeyboardHandlers } from "./keyboard.js";
 
 const canvas = document.getElementById("editorCanvas");
@@ -236,6 +236,7 @@ function loadFile(file) {
 			render();
 			$("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
 		});
+		saveToRecent(file);
 	};
 	image.onerror = () => setStatus("This image could not be decoded by the browser.");
 	image.src = url;
@@ -333,6 +334,25 @@ fileInput.addEventListener("change", (event) => loadFile(event.target.files[0]))
 $("btnChangeImage").addEventListener("click", () => {
 	fileInput.value = "";
 	fileInput.click();
+	recentDropdown.hidden = true;
+});
+$("btnRecentImages").addEventListener("click", (event) => {
+	event.stopPropagation();
+	recentDropdown.hidden = !recentDropdown.hidden;
+	if (!recentDropdown.hidden) {
+		initRecentImages();
+	}
+});
+$("btnClearRecent").addEventListener("click", (event) => {
+	event.stopPropagation();
+	state.recentImages = [];
+	renderRecentImages();
+});
+document.addEventListener("click", (event) => {
+	if (!recentDropdown) return;
+	if (!recentDropdown.contains(event.target) && event.target !== $("btnRecentImages")) {
+		recentDropdown.hidden = true;
+	}
 });
 $("canvasArea").addEventListener("dragover", (event) => {
 	event.preventDefault();
@@ -635,3 +655,4 @@ window.addEventListener("resize", () => {
 
 statusBar.hidden = true;
 loadPendingFile();
+initRecentImages();
