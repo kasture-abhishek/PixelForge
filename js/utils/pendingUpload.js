@@ -151,7 +151,7 @@ export function removeRecentFile(name) {
 		const transaction = db.transaction(RECENT_STORE, "readwrite");
 		const store = transaction.objectStore(RECENT_STORE);
 		const delRequest = store.delete(name);
-		delRequest.onsuccess = () => {
+		transaction.oncomplete = () => {
 			db.close();
 			resolve();
 		};
@@ -162,6 +162,25 @@ export function removeRecentFile(name) {
 		transaction.onerror = () => {
 			db.close();
 			reject(transaction.error);
+		};
+	}));
+}
+
+export function clearRecentFiles() {
+	return openDb().then((db) => new Promise((resolve, reject) => {
+		const transaction = db.transaction(RECENT_STORE, "readwrite");
+		const clearRequest = transaction.objectStore(RECENT_STORE).clear();
+		transaction.oncomplete = () => {
+			db.close();
+			resolve();
+		};
+		clearRequest.onerror = () => {
+			db.close();
+			reject(clearRequest.error);
+		};
+		transaction.onerror = () => {
+			db.close();
+			reject(transaction.error || clearRequest.error);
 		};
 	}));
 }

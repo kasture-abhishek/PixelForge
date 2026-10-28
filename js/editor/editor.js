@@ -1,5 +1,5 @@
 import { formatBytes, isAcceptedImage, MAX_IMAGE_BYTES } from "../utils/fileUtils.js";
-import { takePendingFile, saveRecentFile, getRecentFiles, removeRecentFile } from "../utils/pendingUpload.js";
+import { takePendingFile, saveRecentFile, getRecentFiles, removeRecentFile, clearRecentFiles } from "../utils/pendingUpload.js";
 import { canvasToBlob, downloadBlob, extensionForMime } from "../utils/download.js";
 import { canvasPoint, fitZoom, hexFromPixel } from "../utils/imageUtils.js";
 import { buildFilterString } from "../features/filters.js";
@@ -345,8 +345,7 @@ $("btnRecentImages").addEventListener("click", (event) => {
 });
 $("btnClearRecent").addEventListener("click", (event) => {
 	event.stopPropagation();
-	state.recentImages = [];
-	renderRecentImages();
+	clearRecentImages();
 });
 document.addEventListener("click", (event) => {
 	if (!recentDropdown) return;
@@ -388,16 +387,23 @@ function renderRecentImages() {
 		const li = document.createElement("li");
 		li.className = "ed-recent-item";
 		li.dataset.name = entry.name;
-		li.innerHTML = `
-			<span class="ed-recent-item__name">${entry.name}</span>
-			<span class="ed-recent-item__size">${formatBytes(entry.size)}</span>
-			<button class="ed-recent-item__remove" title="Remove from recent">&#10005;</button>
-		`;
-		const removeBtn = li.querySelector(".ed-recent-item__remove");
+		const name = document.createElement("span");
+		name.className = "ed-recent-item__name";
+		name.textContent = entry.name;
+		const size = document.createElement("span");
+		size.className = "ed-recent-item__size";
+		size.textContent = formatBytes(entry.size);
+		const removeBtn = document.createElement("button");
+		removeBtn.className = "ed-recent-item__remove";
+		removeBtn.type = "button";
+		removeBtn.title = "Remove from recent";
+		removeBtn.setAttribute("aria-label", `Remove ${entry.name} from recent`);
+		removeBtn.textContent = "x";
 		removeBtn.addEventListener("click", (event) => {
 			event.stopPropagation();
 			removeRecentImage(entry.name);
 		});
+		li.append(name, size, removeBtn);
 		li.addEventListener("click", () => {
 			loadFile(entry.file);
 			recentDropdown.hidden = true;
@@ -428,13 +434,24 @@ async function removeRecentImage(name) {
 	}
 }
 
+async function clearRecentImages() {
+	try {
+		await clearRecentFiles();
+		state.recentImages = [];
+		renderRecentImages();
+	} catch (err) {
+		console.error("Could not clear recent images:", err);
+		setStatus("Could not clear recent images.");
+	}
+}
+
 function initRecentImages() {
 	getRecentFiles().then((recent) => {
 		state.recentImages = recent;
 		renderRecentImages();
-	}).catch(() => {
-		state.recentImages = [];
-		renderRecentImages();
+	}).catch((error) => {
+		console.error("Could not load recent images:", error);
+		setStatus("Could not load recent images.");
 	});
 }
 
